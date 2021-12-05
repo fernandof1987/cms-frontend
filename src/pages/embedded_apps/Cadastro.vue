@@ -3,7 +3,7 @@
       <q-card class="">
             <q-card-section>
                 <div class="q-gutter-md row items-start">
-                    <div class="text-h6">Cadastro</div>
+                    <div class="text-h6"><q-icon :name="formHeader.icon"/> Cadastro de {{ formHeader.label }} </div>
                     <q-space />
                     <q-input v-model="formFilterText" outlined rounded dense type="text" label="filtrar campos" style="max-width: 180px" class="">
                         <template v-slot:append>
@@ -61,17 +61,21 @@
 import { defineComponent, onMounted, ref, computed  } from 'vue'
 import { copyToClipboard, useQuasar  } from 'quasar'
 import { getForm } from '../../repositories/form.js'
+import { addUser } from '../../repositories/usuario.js'
 export default defineComponent({
   name: 'Cadastro',
   setup() {
         const $q = useQuasar()
+        const formHeader = ref({})
         const form = ref([])
         const formFilterText = ref('')
         const formModel = ref({}) 
         const vwForm = computed( () => form.value.filter( el => el.label.toLowerCase().indexOf(formFilterText.value.toLowerCase()) > -1 ) )
 
         onMounted( async() => {
-            form.value = await getForm()
+            let rs = await getForm()
+            formHeader.value = {name: rs.name, label: rs.label, icon: rs.icon}
+            form.value = rs.fields
             createFormModel()
         })
 
@@ -97,6 +101,7 @@ export default defineComponent({
         function confirmForm(){
             validateForm()
             alert('confirmou')
+            addUser(formModel.value)
         }
 
         async function copyInput(inputLabel, inputValue) {
@@ -119,7 +124,8 @@ export default defineComponent({
             formModel,
             createFormModel,
             copyInput,
-            confirmForm
+            confirmForm,
+            formHeader
         }
   }
 })
