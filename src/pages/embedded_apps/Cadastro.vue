@@ -22,10 +22,11 @@
                             v-model="formModel[input.name]"
                             rounded
                             outlined
-                            :label="input.label + (input.required ? ' *' : '') "
+                            :label="''/*input.label + (input.required ? ' *' : '') */"
                             :type="input.type"
                             :readonly="input.readonly"
                             dense
+                            bottom-slots
                         >
                             <template v-slot:prepend>
                                 <q-badge color="white" text-color="black" floating>{{ k+1 }}</q-badge>
@@ -34,6 +35,9 @@
                             <template v-slot:append>
                                 <q-icon v-if="formModel[input.name] !== ''" name="close" @click="formModel[input.name] = ''" class="cursor-pointer" />
                             </template>
+                                <template v-slot:hint>
+                                {{ input.label + (input.required ? ' *' : '')  }}
+                                </template>
                         </q-input>
                     </div>
                 </div>
