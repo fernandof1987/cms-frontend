@@ -13,7 +13,7 @@
 
  <q-toolbar-title>
               
-        Quasar App
+        Portal
         </q-toolbar-title>
         <q-space />
 
@@ -24,10 +24,10 @@
             :icon="$q.dark.isActive ? 'nightlight_round' : 'brightness_low'"
             @click="$q.dark.toggle()"
           />
-        <div>Quasar v{{ $q.version }}</div>
 
         <q-btn-dropdown stretch flat label="Usuario" icon="account_circle">
           <q-list>
+            <q-item-label header>Quasar v{{ $q.version }}</q-item-label>
             <q-item-label header>Folders</q-item-label>
             <q-item v-for="n in 3" :key="`x.${n}`" clickable v-close-popup tabindex="0">
               <q-item-section avatar>
