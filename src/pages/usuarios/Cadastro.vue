@@ -72,7 +72,7 @@ export default defineComponent({
   name: 'Cadastro',
   setup() {
         const $q = useQuasar()
-        let formHeader = {}//ref({})
+        let formHeader = ref({})
         const form = ref([])
         const formFilterText = ref('')
         const formModel = ref({}) 
@@ -81,8 +81,8 @@ export default defineComponent({
 
         onMounted( async() => {
             let rs = await getForm()
-            //formHeader.value = {name: rs.name, label: rs.label, icon: rs.icon}
-            formHeader = {name: rs.name, label: rs.label, icon: rs.icon}
+            formHeader.value = {name: rs.name, label: rs.label, icon: rs.icon}
+            //formHeader = {name: rs.name, label: rs.label, icon: rs.icon}
             form.value = rs.fields
             createFormModel()
         })
