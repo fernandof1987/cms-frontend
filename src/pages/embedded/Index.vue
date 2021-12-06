@@ -1,9 +1,3 @@
-<template>
-  <div>
-      Index
-
-  </div>
-</template>
 
 <script>
 import { defineComponent, onMounted } from 'vue';

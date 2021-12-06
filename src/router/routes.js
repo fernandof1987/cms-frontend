@@ -5,8 +5,11 @@ const routes = [
     component: () => import('layouts/MainLayout.vue'),
     children: [
       { path: '', component: () => import('pages/Index.vue') },
-      { path: '/cadastro_embedded', component: () => import('pages/embedded_apps/Cadastro.vue') },
-      { path: '/lista_embedded', component: () => import('pages/embedded_apps/Index.vue') }
+
+      { path: '/usuarios', component: () => import('pages/usuarios/Index.vue') },
+      { path: '/usuarios/create', component: () => import('pages/usuarios/Cadastro.vue') },
+
+      { path: '/embedded', component: () => import('pages/embedded/Index.vue') },
     ]
   },
 

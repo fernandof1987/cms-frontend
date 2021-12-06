@@ -22,21 +22,28 @@
                             v-model="formModel[input.name]"
                             rounded
                             outlined
-                            :label="''/*input.label + (input.required ? ' *' : '') */"
+                            :label="'' /*input.label + (input.required ? ' *' : '') */"
                             :type="input.type"
                             :readonly="input.readonly"
                             dense
                             bottom-slots
+                            :autocomplete="'new-password' /*remove autocomplete do browser, acontece muito com usuario e senha e atrapalha*/"
                         >
                             <template v-slot:prepend>
-                                <q-badge color="white" text-color="black" floating>{{ k+1 }}</q-badge>
-                                <q-icon :name="input.icon" @click="copyInput(input.label, formModel[input.name])"/>
+                                <q-badge color="grey" text-color="" floating>{{ k+1 }}</q-badge>
+                                <q-icon :name="input.icon || 'description' " @click="copyInput(input.label, formModel[input.name])"/>
                             </template>
                             <template v-slot:append>
                                 <q-icon v-if="formModel[input.name] !== ''" name="close" @click="formModel[input.name] = ''" class="cursor-pointer" />
                             </template>
                                 <template v-slot:hint>
-                                {{ input.label + (input.required ? ' *' : '')  }}
+                                    <span :class="validationErrorFields.filter( el => el.field == input.name && formModel[input.name] == '' ).map( el => el.message )[0] ? 'text-negative' : '' ">
+                                        {{ input.label + (input.required ? ' *' : '')  }}
+                                    </span>
+                                    <br v-if="validationErrorFields.filter( el => el.field == input.name ).map( el => el.message )[0]" />
+                                    <span class="text-negative">
+                                        {{ validationErrorFields.filter( el => el.field == input.name && formModel[input.name] == '').map( el => el.message )[0] }}
+                                    </span>
                                 </template>
                         </q-input>
                     </div>
@@ -60,8 +67,7 @@
 <script>
 import { defineComponent, onMounted, ref, computed  } from 'vue'
 import { copyToClipboard, useQuasar  } from 'quasar'
-import { getForm } from '../../repositories/form.js'
-import { addUser } from '../../repositories/usuario.js'
+import { addUser, getForm } from '../../repositories/usuario.js'
 export default defineComponent({
   name: 'Cadastro',
   setup() {
@@ -71,6 +77,7 @@ export default defineComponent({
         const formFilterText = ref('')
         const formModel = ref({}) 
         const vwForm = computed( () => form.value.filter( el => el.label.toLowerCase().indexOf(formFilterText.value.toLowerCase()) > -1 ) )
+        const validationErrorFields = ref([])
 
         onMounted( async() => {
             let rs = await getForm()
@@ -87,21 +94,53 @@ export default defineComponent({
         }
 
         function validateForm(){
-
+            let fields = []
             for (var prop in formModel.value) {
                 if( formModel.value.hasOwnProperty( prop ) ) {
-                    //console.log(prop)
-                    console.log(prop + " = " + formModel.value[prop]);
-                    //let input = form.filter( item => item[el] )[0]
+                    let inputValue = formModel.value[prop]                  
+                    let attrName = prop
+                    let inputStructure = form.value.filter( item => item.name == attrName )[0]
+                    
+                    if(inputStructure.required && inputValue == '' ){
+                        fields.push(
+                            {field: attrName, message: 'Este campo é obrigatório!'}
+                        )
+                    }
+                    /*
+                    else if(inputStructure.minLen >= inputValue.length && inputValue == ''){
+                        fields.push(
+                            {field: attrName, message: 'O campo deve ter mais de ' + inputValue.length + ' caracteres'}
+                        )
+                    }
+                    */
                 }
             }
-
+            //console.log(fields)
+            return fields
         }
 
-        function confirmForm(){
-            validateForm()
-            alert('confirmou')
-            addUser(formModel.value)
+        async function confirmForm(){
+            let problemFields = validateForm()
+            if(problemFields.length === 0){
+                //alert('Formulario confirmado')
+                let rs = await addUser(formModel.value)
+                if(rs.length > 0){
+                    let msg = `Formulário enviado com sucesso!`
+                    $q.notify({message: msg, color: 'primary', icon: 'mail'})
+                }else{
+                    let msg = `Algo deu errado`
+                    $q.notify({message: msg, color: 'negative', icon: 'info'})
+                }
+                createFormModel()//limpa formulario
+                validationErrorFields.value = []//limpa erros de validação
+            }else{
+                validationErrorFields.value = problemFields
+                let msg = `
+                    Formulátio não passou na validação:
+                    ${ JSON.stringify( validationErrorFields.value, null, 2 ) }
+                `
+                $q.notify({message: msg, color: 'negative', icon: 'info'})
+            }
         }
 
         async function copyInput(inputLabel, inputValue) {
@@ -109,7 +148,7 @@ export default defineComponent({
             copyToClipboard(inputValue)
                 .then(() => {
                     let msg = `Conteúdo do campo "${inputLabel}" copiado para a área de transferência`
-                    $q.notify({message: msg, color: 'primary', icon: 'file_copy', actions: [{ icon: 'close', color: 'white' }]})
+                    $q.notify({message: msg, color: 'primary', icon: 'file_copy'})
                 })
                 .catch(() => {
                     let msg = `Não foi possível copiar o conteúdo do campo "${inputLabel}" `
@@ -125,7 +164,8 @@ export default defineComponent({
             createFormModel,
             copyInput,
             confirmForm,
-            formHeader
+            formHeader,
+            validationErrorFields
         }
   }
 })
