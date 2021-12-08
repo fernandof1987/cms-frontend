@@ -9,6 +9,9 @@ const routes = [
       { path: '/usuarios', component: () => import('pages/usuarios/Index.vue') },
       { path: '/usuarios/create', component: () => import('pages/usuarios/Cadastro.vue') },
 
+      { path: '/grupos', component: () => import('pages/grupos/Index.vue') },
+      { path: '/grupos/create', component: () => import('pages/grupos/Cadastro.vue') },
+
       { path: '/embedded', component: () => import('pages/embedded/Index.vue') },
     ]
   },

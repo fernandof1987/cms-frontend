@@ -13,7 +13,7 @@
 
  <q-toolbar-title>
               
-        Portal
+        Portal Cofema
         </q-toolbar-title>
         <q-space />
 
@@ -58,8 +58,6 @@
           </q-list>
         </q-btn-dropdown>
 
-       
-
       </q-toolbar>
     </q-header>
 
@@ -70,16 +68,19 @@
       :mini="miniState"
       @mouseover="miniState = false"
       @mouseout="miniState = true"
-      :mini-to-overlay="false"
-
+      :mini-to-overlay="true"
+      style="background-color: rgba(0, 0, 0, 0.0)"
     >
-      <q-list>
-        <EssentialLink
-          v-for="link in essentialLinks"
-          :key="link.title"
-          v-bind="link"
-        />
+           
+      <q-list bordered class="no-border">
+        <left-menu-item
+          v-for="(item, k) in menu"
+          :key="k"
+          v-bind="item"
+        >
+        </left-menu-item>
       </q-list>
+
     </q-drawer>
 
     <q-page-container >
@@ -89,35 +90,67 @@
 </template>
 
 <script>
-import EssentialLink from 'components/EssentialLink.vue'
 
-const linksList = [
-  {
-    title: 'Home',
-    caption: 'home page',
-    icon: 'home',
-    link: '/#'
-  },
-  {
-    title: 'Cadastro de Usuários',
-    caption: 'Cadastro de Usuários',
-    icon: 'person',
-    link: '/#/usuarios/create'
-  },
-  {
-    title: 'Lista de Usuários',
-    caption: 'Lista de Usuários',
-    icon: 'people',
-    link: '/#/usuarios'
-  },
+import LeftMenuItem from 'src/components/LeftMenuItem.vue'
 
-   {
-    title: 'Cadastro Embedded Apps',
-    caption: 'aplicações externas',
-    icon: 'article',
-    link: '/#/embedded'
+const menu = [
+  { label: 'home', icon: 'home', link: '/#' },
+  {
+    label: 'Admin',
+    icon: 'settings',
+    child: [
+      {
+        label: 'Usuários',
+        icon: 'people',
+        child: [
+          { label: 'Cadastro', icon: 'assignment', link: '/#/usuarios/create' },
+          { label: 'Lista', icon: 'list', link: '/#/usuarios' },
+        ]
+      },
+      {
+        label: 'Grupos',
+        icon: 'groups',
+        child: [
+          { label: 'Cadastro', icon: 'assignment', link: '/#/grupos/create' },
+          { label: 'Lista', icon: 'list', link: '/#/grupos' },
+        ]
+      }
+    ]
   },
-];
+  {
+    label: 'Folder 1', icon: 'folder',
+    child: [
+        {
+          label: 'Folder 2',
+          icon: 'folder',
+          child:
+            [
+              {
+                label: 'Folder 3',
+                icon: 'folder',
+                child:
+                  [
+                      {
+                        label: 'Folder 4',
+                        icon: 'folder',
+                        link: "/#"
+                      }
+                  ]
+              }
+            ]
+        }
+    ]
+  },
+  { label: 'Área do Fornecedor', icon: 'work' },
+  { label: 'Área do Cliente', icon: 'how_to_reg' },
+  { label: 'Área de Produtos', icon: 'category' },
+  { label: 'Área de Logística', icon: 'local_shipping' },
+  { label: 'Área de Marketing', icon: 'auto_awesome' },
+  { label: 'Área do Financeiro', icon: 'monetization_on' },
+  { label: 'Atendimento ao Cliente', icon: 'settings_phone' },
+  { label: 'Área de Compras', icon: 'wysiwyg' },
+  { label: 'Embedded Apps', icon: 'article', link: '/#/embedded' }
+]
 
 import { defineComponent, ref } from 'vue'
 
@@ -125,7 +158,7 @@ export default defineComponent({
   name: 'MainLayout',
 
   components: {
-    EssentialLink
+    LeftMenuItem
   },
 
   setup () {
@@ -134,7 +167,7 @@ export default defineComponent({
 
 
     return {
-      essentialLinks: linksList,
+      menu,
       leftDrawerOpen,
       miniState,
       toggleLeftDrawer () {

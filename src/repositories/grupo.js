@@ -1,19 +1,19 @@
 import { api } from 'boot/axios'
 
-export async function getUser(){
-    let rs = await api.get('/usuario')
+export async function getGroup(){
+    let rs = await api.get('/grupo')
     //console.log(rs.data) 
     return rs.data
 }
 
 export async function getForm(){
-    let rs = await api.get('/usuario/create')
+    let rs = await api.get('/grupo/create')
     //console.log(rs.data) 
     return rs.data
 }
 
-export async function addUser(body){
-    let rs = await api.post('/usuario', body)
+export async function addGroup(body){
+    let rs = await api.post('/grupo', body)
     //console.log(rs.data) 
     return rs.data
 }

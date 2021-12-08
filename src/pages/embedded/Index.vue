@@ -17,8 +17,8 @@ export default defineComponent({
                 noopener: true, // this is set by default for security purposes
                                 // but it can be disabled if specified with a Boolean false value
                 menubar: true,
-                toolbar: true,
-                noreferrer: true,
+                toolbar: false,
+                noreferrer: true
                 // .....any other window features
             }
         )
