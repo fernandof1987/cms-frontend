@@ -1,23 +1,24 @@
 <template>
-    <q-expansion-item v-if="child"
+    <q-expansion-item v-if="child" dense-toggle
         expand-separator
         :icon="icon"
         :label="label"
+        dense
       >
       <!--LeftMenuItemChild v-if="child" :items="child"></LeftMenuItemChild-->
-      <LeftMenuItem v-for="(item, k) in child" :key="k" v-bind="item" style="background-color: rgba(0, 0, 0, 0.1)"></LeftMenuItem>
+      <LeftMenuItem v-for="(item, k) in child" :key="k" v-bind="item" style="background-color: rgba(0, 0, 0, 0.04)"></LeftMenuItem>
     </q-expansion-item>
 
-    <q-item v-else-if="link" clickable tag="a" target="" :href="link" >
+    <q-item v-else-if="link" clickable tag="a" target="" :href="link" dense>
       <q-item-section  avatar >
         <q-icon :name="icon" />
       </q-item-section>
       <q-item-section>
-        <q-item-label>{{ label }}</q-item-label>
+        <q-item-label >{{ label }}</q-item-label>
       </q-item-section>
     </q-item>
     
-    <q-item v-else clickable tag="a" target="" disabled>
+    <q-item v-else clickable tag="a" target="" disabled dense>
       <q-item-section  avatar >
         <q-icon :name="icon" />
       </q-item-section>
@@ -31,11 +32,8 @@
 <script>
 import { defineComponent } from 'vue'
 
-//import LeftMenuItemChild from 'components/LeftMenuItemChild.vue'
-
 export default defineComponent({
   name: 'LeftMenuItem',
-  //components: { LeftMenuItemChild },
   props: {
     label: {
       type: String,
