@@ -71,10 +71,27 @@
       :mini-to-overlay="true"
       style="background-color: rgba(0, 0, 0, 0.0)"
     >
-           
+      <!--q-input label="Filtro" icon="search" dense>
+        <template v-slot:append>
+          <q-icon name="search" avatar/>
+        </template>
+      </q-input-->
+
+  
+
       <q-list bordered class="no-border">
+
+        <q-item>
+          <q-item-section avatar>
+            <q-icon name="search" />
+          </q-item-section>
+          <q-item-section>
+            <q-input label="Filtro" filled square icon="search" dense style="margin-top:-8px"/>
+          </q-item-section>
+        </q-item>
+          
         <left-menu-item
-          v-for="(item, k) in menu"
+          v-for="(item, k) in menuContent"
           :key="k"
           v-bind="item"
         >
@@ -93,7 +110,7 @@
 
 import LeftMenuItem from 'src/components/LeftMenuItem.vue'
 
-const menu = [
+const menuContent = [
   { label: 'home', icon: 'home', link: '/#' },
   {
     label: 'Admin',
@@ -117,6 +134,15 @@ const menu = [
       }
     ]
   },
+  { label: 'Área do Fornecedor',     icon: 'work' },
+  { label: 'Área do Cliente',        icon: 'how_to_reg' },
+  { label: 'Área de Produtos',       icon: 'category' },
+  { label: 'Área de Logística',      icon: 'local_shipping' },
+  { label: 'Área de Marketing',      icon: 'auto_awesome' },
+  { label: 'Área do Financeiro',     icon: 'monetization_on' },
+  { label: 'Atendimento ao Cliente', icon: 'settings_phone' },
+  { label: 'Área de Compras',        icon: 'wysiwyg' },
+  { label: 'Embedded Apps',          icon: 'article', link: '/#/embedded' },
   {
     label: 'Folder 1', icon: 'folder',
     child: [
@@ -131,8 +157,8 @@ const menu = [
                 child:
                   [
                       {
-                        label: 'Folder 4',
-                        icon: 'folder',
+                        label: 'Home',
+                        icon: 'home',
                         link: "/#"
                       }
                   ]
@@ -141,15 +167,6 @@ const menu = [
         }
     ]
   },
-  { label: 'Área do Fornecedor', icon: 'work' },
-  { label: 'Área do Cliente', icon: 'how_to_reg' },
-  { label: 'Área de Produtos', icon: 'category' },
-  { label: 'Área de Logística', icon: 'local_shipping' },
-  { label: 'Área de Marketing', icon: 'auto_awesome' },
-  { label: 'Área do Financeiro', icon: 'monetization_on' },
-  { label: 'Atendimento ao Cliente', icon: 'settings_phone' },
-  { label: 'Área de Compras', icon: 'wysiwyg' },
-  { label: 'Embedded Apps', icon: 'article', link: '/#/embedded' }
 ]
 
 import { defineComponent, ref } from 'vue'
@@ -167,7 +184,7 @@ export default defineComponent({
 
 
     return {
-      menu,
+      menuContent,
       leftDrawerOpen,
       miniState,
       toggleLeftDrawer () {
