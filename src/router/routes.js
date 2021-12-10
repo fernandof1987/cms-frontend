@@ -13,6 +13,8 @@ const routes = [
       { path: '/grupos/create', component: () => import('pages/grupos/Cadastro.vue') },
 
       { path: '/embedded', component: () => import('pages/embedded/Index.vue') },
+
+      { path: '/login', component: () => import('pages/login/Index.vue') },
     ]
   },
 

@@ -13,7 +13,7 @@
         />
 
         <q-toolbar-title>
-          Portal Cofema
+          <img src="~assets/logo_cofema_branco.png" style="width: 160px; margin-top: 6px"/>
         </q-toolbar-title>
         <q-space />
 
@@ -27,9 +27,9 @@
 
           <q-btn flat round icon="notifications_active" color="" dense >
             <q-badge color="negative" floating>2</q-badge>
-            <q-popup-proxy>
+            <q-popup-proxy >
 
-              <q-banner>
+              <q-banner >
                 <template v-slot:avatar>
                   <q-icon name="bookmark" color="primary" />
                 </template>
@@ -91,7 +91,7 @@
       :mini="miniState"
       @mouseover="miniState = false"
       @mouseout="miniState = true"
-      :mini-to-overlay="true"
+      :mini-to-overlay="false"
       style="background-color: rgba(0, 0, 0, 0.0)"
     >
       <!--q-input label="Filtro" icon="search" dense>
@@ -123,9 +123,17 @@
 
     </q-drawer>
 
-    <q-page-container >
-      <router-view class="q-pa-md"/>
-    </q-page-container>
+      <transition
+          appear
+          enter-active-class="animated fadeIn "
+          leave-active-class="animated fadeOut"
+        >
+
+      <q-page-container >
+        <router-view class="q-pa-md" />
+      </q-page-container>
+
+      </transition>
     
     <q-page-sticky position="bottom-right" :offset="[18, 18]">
         <q-btn fab icon="email" color="primary" dense glossy>
@@ -164,6 +172,7 @@ const menuContent = [
       }
     ]
   },
+  { label: 'login',     icon: 'login', link: '/#/login' },
   { label: 'Área do Fornecedor',     icon: 'work' },
   { label: 'Área do Cliente',        icon: 'how_to_reg' },
   { label: 'Área de Produtos',       icon: 'category' },
