@@ -6,10 +6,10 @@ const routes = [
     children: [
       { path: '', component: () => import('pages/Index.vue') },
 
-      { path: '/usuarios', component: () => import('pages/usuarios/Index.vue') },
+      { path: '/usuarios', component: () => import('src/pages/usuarios/Grid.vue') },
       { path: '/usuarios/create', component: () => import('pages/usuarios/Cadastro.vue') },
 
-      { path: '/grupos', component: () => import('pages/grupos/Index.vue') },
+      { path: '/grupos', component: () => import('src/pages/grupos/Grid.vue') },
       { path: '/grupos/create', component: () => import('pages/grupos/Cadastro.vue') },
 
       { path: '/embedded', component: () => import('pages/embedded/Index.vue') },

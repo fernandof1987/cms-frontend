@@ -13,13 +13,15 @@ export default {
      pageName:{
          type: String,
          required: true,
-         default: '../pages/grupos/Index.vue'
+         default: '../pages/usuarios/Grid.vue'
      }
  },
  
  computed: {
   comp () {
-      return defineAsyncComponent(() => import(`../pages/${this.pageName}/Index.vue`))
+      console.log(this.pageName)
+      console.log(`../pages/${this.pageName}/Grid.vue`)
+      return defineAsyncComponent(() => import(`../pages/${this.pageName}/Grid.vue`))
   }
 }
 

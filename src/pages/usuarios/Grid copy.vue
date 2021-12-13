@@ -1,6 +1,6 @@
 <template>
   <div>
-     
+     <!--Grid></Grid-->
     <q-table
       title="Usuários"
       :rows="users"
@@ -26,7 +26,8 @@ import { defineComponent, onMounted, ref } from 'vue';
 import { addUser, getForm, getUser } from '../../repositories/usuario.js'
 
 export default defineComponent({
-  name: 'Index',
+  name: 'UsuarioGrid',
+  //components: {Grid},
   setup() {
 
     const users = ref([])

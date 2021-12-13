@@ -1,17 +1,17 @@
 <template>
   <div>
-
       <q-card class="">
-        <q-dialog v-model="tableDialogAtivo" >
+        <q-dialog v-model="tableDialogAtivo">
 
-            <DinamicCompnent :pageName="'grupos'"></DinamicCompnent>
             <q-card>
-                <q-card-section>
-                <div class="text-h6">Alert</div>
+                <q-card-section class="row items-center q-pb-none">
+                    <div class="text-h6">Caixa de seleção</div>
+                        <q-space />
+                    <q-btn icon="close" flat round dense v-close-popup />
                 </q-card-section>
 
                 <q-card-section class="q-pt-none">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Rerum repellendus sit voluptate voluptas eveniet porro. Rerum blanditiis perferendis totam, ea at omnis vel numquam exercitationem aut, natus minima, porro labore.
+                    <DynamicComponent :pageName="'grupos'"></DynamicComponent>
                 </q-card-section>
 
                 <q-card-actions align="right">
@@ -20,11 +20,11 @@
             </q-card>
         </q-dialog>
 
-        <q-btn label="show" color="primary" @click="tableDialogAtivo = true" />
         <!--q-btn label="import" color="negative" @click="importTabelaConsulta('grupos')" /-->
 
 
             <q-card-section>
+
                 <div class="q-gutter-md row items-start">
                     <div class="text-h6"><q-icon :name="formHeader.icon"/> Formulário de {{ formHeader.label }} </div>
                     <q-space />
@@ -34,6 +34,30 @@
                             <q-icon v-if="formFilterText !== ''" name="close" @click="formFilterText = ''" class="cursor-pointer" />
                         </template>
                     </q-input>
+                </div>
+                
+                <div class="q-gutter-y-md" style="max-width: 400px">
+                    <q-tabs
+                        v-model="tab"
+                        inline-label
+                        class=""
+                        dense
+                    >
+                        <q-tab name="article" label="ABA 1" icon="article" />
+                        <q-tab name="alarms" label="ABA 2" icon="rocket_launch" />
+                        <q-space />
+                        <q-btn-dropdown auto-close stretch flat icon="more" label="More...">
+                        <q-list>
+                            <q-item clickable @click="tab = 'movies'">
+                            <q-item-section>Movies</q-item-section>
+                            </q-item>
+
+                            <q-item clickable @click="tab = 'photos'">
+                            <q-item-section>Photos</q-item-section>
+                            </q-item>
+                        </q-list>
+                        </q-btn-dropdown>
+                    </q-tabs>
                 </div>
             </q-card-section>
 
@@ -94,9 +118,24 @@
 
                             <template v-slot:append>
                                 <q-icon v-if="formModel[input.name] !== ''" name="close" @click="formModel[input.name] = ''" class="cursor-pointer" />
+                                 <!--
+                                    Dialog Busca 'search' type table abaixo!
+                                -->
+                                <q-icon
+                                    v-if="input.type == 'table'"
+                                    name="search"
+                                    color=""
+                                    @click="
+                                        tableDialogAtivo = true
+                                        //openDialogSearch(input.tableName)
+                                    "
+                                class="cursor-pointer"  />
                             </template>
 
                             <template v-slot:hint>
+
+                                <span v-if="input.type == 'table'" class="text-positive">{{ selected }}</span><br />
+
                                 <span :class="validationErrorFields.filter( el => el.field == input.name && formModel[input.name] == '' ).map( el => el.message )[0] ? 'text-negative' : '' ">
                                     {{ input.label + (input.required ? ' *' : '')  }}
                                 </span>
@@ -134,16 +173,18 @@
 <script>
 import { defineComponent, onMounted, ref, computed, defineAsyncComponent  } from 'vue'
 import { copyToClipboard, useQuasar  } from 'quasar'
-import DinamicCompnent from './DinamicComponet.vue'
+import DynamicComponent from './DynamicComponent.vue'
+import { useStore } from 'vuex'
+
 //import { addUser, getForm } from '../../repositories/usuario.js'
 export default defineComponent({
   name: 'Cadastro',
   components: {
-        tabelaConsulta: defineAsyncComponent(() => import('../pages/grupos/Index.vue')),
-        DinamicCompnent
+        tabelaConsulta: defineAsyncComponent(() => import('../pages/grupos/Grid.vue')),
+        DynamicComponent
     },
   props: {
-    action: { type: String, default: 'create' }, // create || edit
+    action: { type: String, default: 'create' }, // create || edit || show || delete
     form: { type: Object, required: true },
     filterFields: { type: Boolean, default: true },
     displayInline: { type: Boolean, default: true },
@@ -152,22 +193,30 @@ export default defineComponent({
   },
   setup(props) {
         const $q = useQuasar()
+        const $store = useStore()
+
+        const selected = computed({
+            get: () => {
+                return $store.state.caixaSelecao.singleRowSelected
+            },
+            set: val => {
+                $store.commit('caixaSelecao/setSingleRowSelected', val)
+            }
+        })
+        const tab = ref(null)
         let formHeader = ref({})
         const form = ref([])
         const formFilterText = ref('')
         const formModel = ref({}) 
         const vwForm = computed( () => form.value.filter( el => el.label.toLowerCase().indexOf(formFilterText.value.toLowerCase()) > -1 ) )
         const validationErrorFields = ref([])
-
         //const tabelaConsulta = ref({})
         const tableDialogAtivo = ref(false)
-
         function importTabelaConsulta(name){
             //tabelaConsulta.value = () => import(name + '/Index.vue')
             //tabelaConsulta.value = defineAsyncComponent( () => import('../pages/grupos/Index.vue') )
             //tabelaConsulta.value = defineAsyncComponent(() => import('../pages/grupos/Index.vue'))
         }
-
         onMounted( async() => {
             //let rs = await getForm()
             //console.log('props', props)
@@ -178,7 +227,6 @@ export default defineComponent({
             form.value = rs.fields
             createFormModel()
         })
-
         function createFormModel(){
             
             let objModel = {}
@@ -200,7 +248,6 @@ export default defineComponent({
             formModel.value = objModel
             */
         }
-
         function validateForm(){
             let fields = []
             for (var prop in formModel.value) {
@@ -226,7 +273,6 @@ export default defineComponent({
             //console.log(fields)
             return fields
         }
-
         async function confirmForm(){
             let problemFields = validateForm()
             if(problemFields.length === 0){
@@ -251,7 +297,6 @@ export default defineComponent({
                 $q.notify({message: msg, color: 'negative', icon: 'info'})
             }
         }
-
         async function copyInput(inputLabel, inputValue) {
             if(!inputValue) return
             copyToClipboard(inputValue)
@@ -277,7 +322,9 @@ export default defineComponent({
             validationErrorFields,
             importTabelaConsulta,
             //tabelaConsulta,
-            tableDialogAtivo
+            tableDialogAtivo,
+            selected,
+            tab
         }
   }
 })

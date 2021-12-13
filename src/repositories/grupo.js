@@ -6,7 +6,7 @@ export async function getGroup(){
     return rs.data
 }
 
-export async function getForm(){
+export async function createForm(){
     let rs = await api.get('/grupo/create')
     //console.log(rs.data) 
     return rs.data
@@ -14,6 +14,12 @@ export async function getForm(){
 
 export async function addGroup(body){
     let rs = await api.post('/grupo', body)
+    //console.log(rs.data) 
+    return rs.data
+}
+
+export async function editForm(primaryKeyValue){
+    let rs = await api.post('/grupo/edit/' + primaryKeyValue, body)
     //console.log(rs.data) 
     return rs.data
 }

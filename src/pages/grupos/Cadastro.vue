@@ -12,19 +12,30 @@
 
 <script>
 import { defineComponent, onMounted, ref  } from 'vue'
-import { addGroup, getForm } from '../../repositories/grupo.js'
+import { addGroup, createForm, editForm } from '../../repositories/grupo.js'
 
 import Form from 'components/Form.vue'
 
 export default defineComponent({
     name: 'CadastroGrupo',
     components: {Form},
-    setup() {
+    props: {
+      action: { type: String, default: 'create' }, //['create', 'edit', 'show', 'delete']
+      primaryKeyValue: { type: String, default: null }
+    },
+    setup(props) {
         
         const form = ref('')
 
         onMounted( async () => {
-          form.value = await getForm()
+            if(props.action == 'create'){
+                form.value = await createForm()
+            }else if(props.action == 'edit'){
+                form.value = await editForm(props.primaryKeyValue)
+            }
+
+            console.log(form.value)
+          
         })
 
         return {

@@ -12,7 +12,7 @@
 
 <script>
 import { defineComponent, onMounted, ref  } from 'vue'
-import { addUser, getForm } from '../../repositories/usuario.js'
+import { addUser, createForm } from '../../repositories/usuario.js'
 
 import Form from 'components/Form.vue'
 
@@ -24,7 +24,7 @@ export default defineComponent({
         const form = ref('')
 
         onMounted( async () => {
-          form.value = await getForm()
+          form.value = await createForm()
         })
 
         return {
