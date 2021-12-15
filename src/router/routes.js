@@ -7,10 +7,11 @@ const routes = [
       { path: '', component: () => import('pages/Index.vue') },
 
       { path: '/usuarios', component: () => import('src/pages/usuarios/Grid.vue') },
-      { path: '/usuarios/create', component: () => import('pages/usuarios/Cadastro.vue') },
+      //{ path: '/usuarios/create', component: () => import('pages/usuarios/Cadastro.vue') },
 
       { path: '/grupos', component: () => import('src/pages/grupos/Grid.vue') },
-      { path: '/grupos/create', component: () => import('pages/grupos/Cadastro.vue') },
+      //{ path: '/grupos/create', component: () => import('pages/grupos/Cadastro.vue') },
+      //{ path: '/grupos/edit', component: () => import('pages/grupos/Cadastro.vue'), props: true },
 
       { path: '/embedded', component: () => import('pages/embedded/Index.vue') },
 

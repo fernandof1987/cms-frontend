@@ -1,12 +1,17 @@
 <template>
     <q-expansion-item v-if="child" dense-toggle
+        :content-inset-level="0.1"
         expand-separator
         :icon="icon"
         :label="label"
         dense
-      >
-      <!--LeftMenuItemChild v-if="child" :items="child"></LeftMenuItemChild-->
-      <LeftMenuItem v-for="(item, k) in child" :key="k" v-bind="item" style="background-color: rgba(0, 0, 0, 0.04)"></LeftMenuItem>
+    >
+        <LeftMenuItem
+          v-for="(item, k) in child"
+          :key="k"
+          v-bind="item"
+          :style="$q.dark.isActive ? 'background-color: rgba(255, 255, 255, 0.08)' : 'background-color: rgba(0, 0, 0, 0.08)' "
+        ></LeftMenuItem>
     </q-expansion-item>
 
     <q-item v-else-if="link" clickable tag="a" target="" :href="link" dense>

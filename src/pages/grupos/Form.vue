@@ -1,9 +1,10 @@
 <template>
   <div>
       <Form
-        action="create"
+        :action="action"
+        :primaryKeyValue="primaryKeyValue"
         :form="form"
-        :submit="addGroup"
+        :submit="submitFunction"
         v-if="form"
       >
       </Form>
@@ -12,7 +13,7 @@
 
 <script>
 import { defineComponent, onMounted, ref  } from 'vue'
-import { addGroup, createForm, editForm } from '../../repositories/grupo.js'
+import { addGroup, createForm, editForm, updateGroup, deleteGroup } from '../../repositories/grupo.js'
 
 import Form from 'components/Form.vue'
 
@@ -27,20 +28,30 @@ export default defineComponent({
         
         const form = ref('')
 
+        const submitFunction = ref('')
+
+
         onMounted( async () => {
             if(props.action == 'create'){
                 form.value = await createForm()
+                submitFunction.value = addGroup
             }else if(props.action == 'edit'){
+                //console.log(props.primaryKeyValue)
                 form.value = await editForm(props.primaryKeyValue)
+                submitFunction.value = updateGroup
+            }else if(props.action == 'delete'){
+                //console.log(props.primaryKeyValue)
+                form.value = await editForm(props.primaryKeyValue)
+                submitFunction.value = deleteGroup
+            }else{
+                form.value = await editForm(props.primaryKeyValue)
+                submitFunction.value = () => console.log('Submit')
             }
-
-            console.log(form.value)
-          
         })
 
         return {
           form,
-          addGroup
+          submitFunction
         }
     }
 })

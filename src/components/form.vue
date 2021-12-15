@@ -1,27 +1,34 @@
 <template>
   <div>
-      <q-card class="">
-        <q-dialog v-model="tableDialogAtivo">
+      <q-card class="no-box-shadow">
 
-            <q-card>
+        <q-dialog v-model="tableDialogAtivo" :maximized="maximizedToggle">
+            <q-card :style=" maximizedToggle ? 'max-width: 99vw;' : 'max-width: 90vw;' " bordered>
                 <q-card-section class="row items-center q-pb-none">
-                    <div class="text-h6">Caixa de seleção</div>
-                        <q-space />
+                    <q-space />
+
+                    <q-btn dense flat :icon=" maximizedToggle ? 'minimize' : 'crop_square' " @click="maximizedToggle = !maximizedToggle" :disable="false">
+                        <q-tooltip v-if="maximizedToggle" class="">Restaurar</q-tooltip>
+                        <q-tooltip v-else="maximizedToggle" class="">Maximizar</q-tooltip>
+                    </q-btn>
+
                     <q-btn icon="close" flat round dense v-close-popup />
+
                 </q-card-section>
 
                 <q-card-section class="q-pt-none">
-                    <DynamicComponent :pageName="'grupos'"></DynamicComponent>
+                    <!--DynamicComponent :pageName="`pages/${tableDialogName}/Grid.vue`"></DynamicComponent-->
+                    <DynamicComponent folder="pages" :file="tableDialogName + '/Grid.vue'" :finishFunction="getDialogResult" :key="tableDialogName" :componentsProps="{action: action}"></DynamicComponent>
                 </q-card-section>
 
                 <q-card-actions align="right">
-                <q-btn flat label="OK" color="primary" v-close-popup />
+                    <q-btn flat label="Ok" color="secondary" v-close-popup @click="getDialogResult" />
+                    <!--q-btn flat label="OK" color="primary" v-close-popup /-->
                 </q-card-actions>
             </q-card>
         </q-dialog>
 
         <!--q-btn label="import" color="negative" @click="importTabelaConsulta('grupos')" /-->
-
 
             <q-card-section>
 
@@ -32,11 +39,12 @@
                         <template v-slot:append>
                             <q-icon name="search"/>
                             <q-icon v-if="formFilterText !== ''" name="close" @click="formFilterText = ''" class="cursor-pointer" />
+                            
                         </template>
                     </q-input>
                 </div>
                 
-                <div class="q-gutter-y-md" style="max-width: 400px">
+                <!--div class="q-gutter-y-md" style="max-width: 400px">
                     <q-tabs
                         v-model="tab"
                         inline-label
@@ -58,7 +66,7 @@
                         </q-list>
                         </q-btn-dropdown>
                     </q-tabs>
-                </div>
+                </div-->
             </q-card-section>
 
             <q-separator />
@@ -106,18 +114,18 @@
                             outlined
                             :label="'' /*input.label + (input.required ? ' *' : '') */"
                             :type="input.type"
-                            :readonly="input.readonly"
+                            :readonly="input.readonly || action == 'show' || action == 'delete'"
                             dense
                             bottom-slots
                             :autocomplete="'new-password' /*remove autocomplete do browser, acontece muito com usuario e senha e atrapalha*/"
                         >
                             <template v-slot:prepend>
-                                <q-badge color="grey" text-color="" floating>{{ input.sequence }}</q-badge>
+                                <!--q-badge color="grey" text-color="" floating>{{ input.sequence }}</q-badge-->
                                 <q-icon :name="input.icon || 'description' " @click="copyInput(input.label, formModel[input.name])"/>
                             </template>
 
                             <template v-slot:append>
-                                <q-icon v-if="formModel[input.name] !== ''" name="close" @click="formModel[input.name] = ''" class="cursor-pointer" />
+                                <q-icon v-if="formModel[input.name] !== '' && !input.readonly && ( action == 'create' || action == 'edit' ) " name="close" @click="formModel[input.name] = ''" class="cursor-pointer" />
                                  <!--
                                     Dialog Busca 'search' type table abaixo!
                                 -->
@@ -126,15 +134,15 @@
                                     name="search"
                                     color=""
                                     @click="
-                                        tableDialogAtivo = true
+                                        tableDialogAtivo = true,
+                                        tableDialogName = input.tableName,
+                                        columnDialogName = input.name
                                         //openDialogSearch(input.tableName)
                                     "
                                 class="cursor-pointer"  />
                             </template>
 
                             <template v-slot:hint>
-
-                                <span v-if="input.type == 'table'" class="text-positive">{{ selected }}</span><br />
 
                                 <span :class="validationErrorFields.filter( el => el.field == input.name && formModel[input.name] == '' ).map( el => el.message )[0] ? 'text-negative' : '' ">
                                     {{ input.label + (input.required ? ' *' : '')  }}
@@ -161,7 +169,7 @@
                     <q-btn icon="file_copy" rounded outline align="right" class="" color="primary" label="Copiar área Tranferência" />
                     <q-btn icon="download" rounded outline align="right" class="" color="primary" label="Baixar" />
                     -->
-                    <q-btn icon="clear" rounded outline align="right" class="" color="warning" label="Limpar" @click="createFormModel"/>
+                    <q-btn icon="clear" rounded outline align="right" class="" color="warning" label="Reset" @click="createFormModel"/>
                     <q-btn icon="check" rounded outline align="right" class="" color="positive" label="Confirmar" @click="confirmForm"/>
                 </div>
             </q-card-section>
@@ -172,7 +180,7 @@
 
 <script>
 import { defineComponent, onMounted, ref, computed, defineAsyncComponent  } from 'vue'
-import { copyToClipboard, useQuasar  } from 'quasar'
+import { copyToClipboard, useQuasar, AppFullscreen  } from 'quasar'
 import DynamicComponent from './DynamicComponent.vue'
 import { useStore } from 'vuex'
 
@@ -180,29 +188,25 @@ import { useStore } from 'vuex'
 export default defineComponent({
   name: 'Cadastro',
   components: {
-        tabelaConsulta: defineAsyncComponent(() => import('../pages/grupos/Grid.vue')),
+        //tabelaConsulta: defineAsyncComponent(() => import('../pages/grupos/Grid.vue')),
         DynamicComponent
     },
   props: {
-    action: { type: String, default: 'create' }, // create || edit || show || delete
+    action: { type: String, default: '' }, // create || edit || show || delete
+    primaryKeyValue: { type: String },
     form: { type: Object, required: true },
     filterFields: { type: Boolean, default: true },
     displayInline: { type: Boolean, default: true },
     formValues: [], //only edit
-    submit: { type: Function, required: true  }
+    submit: { type: Function  }
   },
   setup(props) {
         const $q = useQuasar()
         const $store = useStore()
+        
+        //const id = Date.now() //id unico
 
-        const selected = computed({
-            get: () => {
-                return $store.state.caixaSelecao.singleRowSelected
-            },
-            set: val => {
-                $store.commit('caixaSelecao/setSingleRowSelected', val)
-            }
-        })
+
         const tab = ref(null)
         let formHeader = ref({})
         const form = ref([])
@@ -212,6 +216,41 @@ export default defineComponent({
         const validationErrorFields = ref([])
         //const tabelaConsulta = ref({})
         const tableDialogAtivo = ref(false)
+        const tableDialogName = ref(null)
+        const columnDialogName = ref(null)
+        const maximizedToggle = ref(false)
+
+        const selected = computed({
+            get: () => {                
+                if($store.state.caixaSelecao.singleRowSelected.length > 0){
+                    let rs = $store.state.caixaSelecao.singleRowSelected.filter( el => el.table == tableDialogName.value )
+                    if(rs.lenght > 0 && rs[0]['row']){
+                        return $store.state.caixaSelecao.singleRowSelected.filter( el => el.table == tableDialogName.value )[0]['row']
+                    }else{
+                        return []
+                    }
+                }else{
+                    return []
+                }
+            },
+            set: val => {
+                $store.commit('caixaSelecao/setSingleRowSelected', val)
+                //$store.commit('caixaSelecao/setSingleRowSelected', {table: tableDialogName.value, primaryKeyName: 'id',  row: val[0]})
+            }
+        })
+
+        function getDialogResult(){
+            let inputName = columnDialogName.value
+            //console.log('inputName: ', inputName)
+            let rs = $store.state.caixaSelecao.singleRowSelected.filter( el => el.table == tableDialogName.value )[0]['row']
+            //console.log('rs')
+            //console.log(rs)
+            //console.log('formModel.value')
+            //console.log(formModel.value)
+            formModel.value[inputName] = rs[0].id
+            //console.log(formModel.value[inputName])
+        }
+
         function importTabelaConsulta(name){
             //tabelaConsulta.value = () => import(name + '/Index.vue')
             //tabelaConsulta.value = defineAsyncComponent( () => import('../pages/grupos/Index.vue') )
@@ -229,14 +268,30 @@ export default defineComponent({
         })
         function createFormModel(){
             
+            //console.log('action')
+            console.log('action: ', props.action)
+            //alert(props.action)
+
             let objModel = {}
             for(let i = 0, len = form.value.length; i < len; i++){
                 let item = form.value[i]
-                if(item.default){
-                    objModel[item.name] = item.default
-                }else{
-                    objModel[item.name] = ''
+                if(props.action == 'create'){
+                    if(item.default){
+                        objModel[item.name] = item.default
+                    }else{
+                        objModel[item.name] = ''
+                    }
+                }else/* if(props.action == 'edit' || props.action == 'show' || props.action == 'delete')*/{
+                    if(item.type == 'date' && item.value){
+                        objModel[item.name] = item.value.substring(0, 10)
+                    }else if(item.type == 'select'){
+                        objModel[item.name] = item.options.filter( el => el.value == item.value )[0]
+                    }else{
+                        objModel[item.name] = item.value
+                    }
+                    
                 }
+          
                 
             }
             formModel.value = objModel
@@ -278,7 +333,17 @@ export default defineComponent({
             if(problemFields.length === 0){
                 //alert('Formulario confirmado')
                 //let rs = await addUser(formModel.value)
-                let rs = await props.submit(formModel.value)
+                let rs = null
+                if(props.action == 'create'){
+                    rs = await props.submit(formModel.value)
+                }else if(props.action == 'edit'){
+                    rs = await props.submit(props.primaryKeyValue, formModel.value)
+                }else if(props.action == 'delete'){
+                    rs = await props.submit(props.primaryKeyValue)
+                }
+
+                if(!rs) return
+
                 if(rs.length > 0){
                     let msg = `Formulário enviado com sucesso!`
                     $q.notify({message: msg, color: 'primary', icon: 'mail'})
@@ -288,6 +353,7 @@ export default defineComponent({
                 }
                 createFormModel()//limpa formulario
                 validationErrorFields.value = []//limpa erros de validação
+                //tableDialogAtivo.value = false
             }else{
                 validationErrorFields.value = problemFields
                 let msg = `
@@ -323,8 +389,12 @@ export default defineComponent({
             importTabelaConsulta,
             //tabelaConsulta,
             tableDialogAtivo,
+            tableDialogName,
+            columnDialogName,
             selected,
-            tab
+            tab,
+            getDialogResult,
+            maximizedToggle
         }
   }
 })

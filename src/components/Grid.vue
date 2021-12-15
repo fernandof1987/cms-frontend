@@ -1,11 +1,36 @@
 <template>
     <div>
+
+        <q-dialog v-model="showDialogButton" :maximized="maximizedToggle">
+            <q-card :style=" maximizedToggle ? 'max-width: 99vw;' : 'max-width: 90vw;' " bordered>
+                <q-card-section class="row items-center q-pb-none">
+                    <div class="text-h6"></div>
+                    <q-space />
+                    
+                    <q-btn dense flat :icon=" maximizedToggle ? 'minimize' : 'crop_square' " @click="maximizedToggle = !maximizedToggle" :disable="false">
+                        <q-tooltip v-if="maximizedToggle" class="">Restaurar</q-tooltip>
+                        <q-tooltip v-else="maximizedToggle" class="">Maximizar</q-tooltip>
+                    </q-btn>
+
+                    <q-btn icon="close" flat round dense v-close-popup />
+                </q-card-section>
+
+                <q-card-section class="q-pt-none">
+                    <!--DynamicComponent :pageName="`pages/${tableDialogName}/Grid.vue`"></DynamicComponent-->
+                    <DynamicComponent folder="pages" :file="name + '/Form.vue'" :key="name" :componentsProps="{action: formAction, primaryKeyValue: primaryKeyValue}"></DynamicComponent>
+                </q-card-section>
+
+                <!--q-card-actions align="right">
+                    <q-btn flat label="Ok" color="secondary" v-close-popup />
+                </q-card-actions-->
+            </q-card>
+        </q-dialog>
+
         <q-table
             :title="label"
             :rows="rows"
-            
+            class="no-box-shadow	"
             ref="tableRef"
-            :class="tableClass"
             tabindex="0"
             :row-key="primaryKey"
             selection="single"
@@ -13,15 +38,21 @@
             :filter="filter"
 
         >
-            <template v-slot:top-left >
+            <template v-slot:top-left>
 
-                <span class="text-h6">{{ label }}</span><br />
+                <div class="q-gutter-sm" style="">
+                    
+                    <span class="text-h6" >{{ label }}</span>
 
-                <div class="q-gutter-sm">
                     <q-btn
                         v-for="(button, index) in buttonActions"
                         dense
-                        @click="$router.push('/grupos/create')"
+                        outline
+                        @click="
+                            //$router.push(`/${name}/create`)
+                            formAction = 'create',
+                            showDialogButton = true
+                        "
                         :key="index"
                         color="primary"
                         :label="button.label"
@@ -29,12 +60,24 @@
                     />
 
                     <q-btn
+                        v-if="selected.length > 0"
                         v-for="(button, index) in buttonRowActions"
                         dense
-                        @click="$router.push('/grupos/edit/' + selected[0].id)"
+                        outline
+                        @click="
+                            formAction = button.action,
+                            primaryKeyValue = selected.length ? selected[0].id : null,
+                            showDialogButton = true
+                            /*
+                            $router.push({
+                                path: `/${name}/edit`,
+                                params: { action: 'edit', primaryKeyValue: selected[0].id }
+                            })
+                            */
+                        "
                         :key="index"
                         color="secondary"
-                        :label="button.label"
+                        :label="button.label + '(' + selected[0].id + ')'"
                         :icon="button.icon"
                     />
                 </div>
@@ -44,7 +87,7 @@
             <template v-slot:top-right>
                 <q-input outlined rounded dense debounce="300" v-model="filter" placeholder="Busca">
                     <template v-slot:append>
-                    <q-icon name="search" />
+                        <q-icon name="search" />
                     </template>
                 </q-input>
             </template>
@@ -54,7 +97,9 @@
             </template-->
             
         </q-table>
-        selected: {{ selected }}
+        <!--span>
+            row selected: {{ selected }}
+        </span-->
 
     </div>
 </template>
@@ -65,8 +110,12 @@
 import { ref, computed, nextTick } from 'vue'
 import { useStore } from 'vuex'
 
+import DynamicComponent from './DynamicComponent.vue'
+
+
 export default {
  name: "Table",
+ components: { DynamicComponent },
  //I am passing the name of the Component as a prop
  props: {
     name: { type: String },
@@ -75,43 +124,60 @@ export default {
     primaryKey: { type: String },
     buttonActions: { type: Array, default: [] },
     buttonRowActions: { type: Array, default: [] },
-    buttonRowActions: [],
     rows: { type: Array, default: [] }, // create || edit
 },
 setup(props) {
     const $store = useStore()
     const tableRef = ref(null)
 
+    //const id = Date.now() //id unico
+
+    //console.log(id)
+
+    const showDialogButton = ref(false)
+    const formAction = ref('')
+    const primaryKeyValue = ref('')
+    const maximizedToggle = ref(false)
+
     //const selected = ref([])
-    const selected = computed({
-        get: () => {
-            //console.log('props.name', props.name)
-            //console.log($store.state.caixaSelecao.singleRowSelected.filter( el => el.table == props.name ))
-            //console.log($store.state.caixaSelecao.singleRowSelected)//.filter( el => el.table == props.name ))
-            //return $store.state.caixaSelecao.singleRowSelected.filter( el => el.table == props.name )
-            return $store.state.caixaSelecao.singleRowSelected
-        },
-        set: val => {
-            //$store.commit('caixaSelecao/setSingleRowSelected', { table: props.name, primaryKey: props.primaryKey, row: val[0] })
-            $store.commit('caixaSelecao/setSingleRowSelected', val)
-        }
-    })
     /*
     const selected = computed({
-        get: () => {
-            console.log($store.state.caixaSelecao.singleRowSelected)
-            return $store.state.caixaSelecao.singleRowSelected
-        },
-        set: val => {
-            $store.commit('caixaSelecao/setSingleRowSelected', val)
-        }
+        get: () =>  $store.state.caixaSelecao.singleRowSelected,
+        set: val => $store.commit('caixaSelecao/setSingleRowSelected', val)
     })
     */
+
+    
+    const selected = computed({
+        get: () => {
+            if($store.state.caixaSelecao.singleRowSelected.length > 0){
+                let rs = $store.state.caixaSelecao.singleRowSelected.filter( el => el.table == props.name )
+                //let rs = $store.state.caixaSelecao.singleRowSelected.filter( el => el.table == id )
+                if(rs.length > 0 && rs[0].row){
+                    return $store.state.caixaSelecao.singleRowSelected.filter( el => el.table == props.name )[0]['row']
+                    //return $store.state.caixaSelecao.singleRowSelected.filter( el => el.table == id )[0]['row']
+                }else{
+                    return []
+                }                
+            }else{
+                return []
+            }
+        },
+        set: val => {
+            $store.commit('caixaSelecao/setSingleRowSelected', {table: props.name, primaryKeyName: props.primaryKey,  row: val})
+            //$store.commit('caixaSelecao/setSingleRowSelected', {table: id, primaryKeyName: props.primaryKey,  row: val})
+        }
+    })
+    
     return {
       tableRef,
 
       filter: ref(''),
       selected,
+      showDialogButton,
+      formAction,
+      primaryKeyValue,
+      maximizedToggle
       
     }
 }

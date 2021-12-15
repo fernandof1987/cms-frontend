@@ -91,8 +91,7 @@
       :mini="miniState"
       @mouseover="miniState = false"
       @mouseout="miniState = true"
-      :mini-to-overlay="false"
-      style="background-color: rgba(0, 0, 0, 0.0)"
+      :mini-to-overlay="true"
     >
       <!--q-input label="Filtro" icon="search" dense>
         <template v-slot:append>
@@ -153,22 +152,29 @@ const menuContent = [
   {
     label: 'Admin',
     icon: 'settings',
+    "default-opened": true,
     child: [
       {
         label: 'Usuários',
         icon: 'people',
+        link: '/#/usuarios'
+        /*
         child: [
-          { label: 'Cadastro', icon: 'assignment', link: '/#/usuarios/create' },
+          //{ label: 'Cadastro', icon: 'assignment', link: '/#/usuarios/create' },
           { label: 'Lista', icon: 'list', link: '/#/usuarios' },
         ]
+        */
       },
       {
         label: 'Grupos',
         icon: 'groups',
+        link: '/#/grupos'
+        /*
         child: [
           { label: 'Cadastro', icon: 'assignment', link: '/#/grupos/create' },
           { label: 'Lista', icon: 'list', link: '/#/grupos' },
         ]
+        */
       }
     ]
   },

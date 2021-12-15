@@ -1,8 +1,9 @@
 <template>
   <div>
       <Grid
+        :name="tableName"
         :rows="grupos"
-        :label="tableName"
+        :label="tableLabel"
         :primaryKey="primaryKey"
         :buttonActions="buttonActions"
         :buttonRowActions="buttonRowActions"
@@ -23,6 +24,7 @@ export default defineComponent({
 
     const grupos = ref([])
     const tableName = ref('')
+    const tableLabel = ref('')
     const primaryKey = ref('')
     const buttonActions = ref([])
     const buttonRowActions = ref([])
@@ -32,7 +34,8 @@ export default defineComponent({
      
     onMounted( async () => {
         let rs = await getGroup()
-        tableName.value = rs.metadata.label
+        tableName.value = rs.metadata.name
+        tableLabel.value = rs.metadata.label
         primaryKey.value = rs.metadata.primaryKey
         buttonActions.value = rs.metadata.buttonActions
         buttonRowActions.value = rs.metadata.buttonRowActions
@@ -43,6 +46,7 @@ export default defineComponent({
         grupos,
         filter,
         tableName,
+        tableLabel,
         primaryKey,
         buttonActions,
         buttonRowActions
