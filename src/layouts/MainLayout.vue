@@ -1,7 +1,14 @@
 <template>
   <q-layout view="lHh Lpr lFf">
+                    
     <q-header elevated>
-      <q-toolbar >
+      
+      <!--q-bar class="">
+        <q-icon name="laptop_chromebook" />
+        <div>Barra</div>
+      </q-bar-->
+
+      <q-bar class="bg-primary">
 
         <q-btn
           flat
@@ -13,7 +20,7 @@
         />
 
         <q-toolbar-title>
-          <img src="~assets/logo_cofema_branco.png" style="width: 160px; margin-top: 6px"/>
+          <img src="~assets/logo_cofema_branco.png" style="width: 120px; margin-top: 6px"/>
         </q-toolbar-title>
         <q-space />
 
@@ -81,7 +88,7 @@
             </q-list>
           </q-btn-dropdown>
 
-      </q-toolbar>
+      </q-bar>
     </q-header>
 
     <q-drawer

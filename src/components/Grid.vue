@@ -1,21 +1,40 @@
 <template>
-    <div>
+  <div class="no-box-shadow" style="margin: -16px">
 
         <q-dialog v-model="showDialogButton" :maximized="maximizedToggle">
             <q-card :style=" maximizedToggle ? 'max-width: 99vw;' : 'max-width: 90vw;' " bordered>
-                <q-card-section class="row items-center q-pb-none">
+
+                <q-bar class="bg-primary text-white">
+
+                    <q-icon name="laptop_chromebook" />
+
+                    <div>Barra</div>
+
+                    <q-space />
+
+                    <q-btn dense round flat :icon=" maximizedToggle ? 'minimize' : 'crop_square' " @click="maximizedToggle = !maximizedToggle" :disable="false">
+                        <q-tooltip v-if="maximizedToggle" class="">Restaurar</q-tooltip>
+                        <q-tooltip v-else class="">Maximizar</q-tooltip>
+                    </q-btn>
+
+                    <q-btn icon="close" flat round dense v-close-popup>
+                        <q-tooltip class="">Fechar</q-tooltip>
+                    </q-btn>
+
+                </q-bar>
+                <!--q-card-section class="row items-center q-pb-none">
                     <div class="text-h6"></div>
                     <q-space />
                     
                     <q-btn dense flat :icon=" maximizedToggle ? 'minimize' : 'crop_square' " @click="maximizedToggle = !maximizedToggle" :disable="false">
                         <q-tooltip v-if="maximizedToggle" class="">Restaurar</q-tooltip>
-                        <q-tooltip v-else="maximizedToggle" class="">Maximizar</q-tooltip>
+                        <q-tooltip v-else class="">Maximizar</q-tooltip>
                     </q-btn>
 
                     <q-btn icon="close" flat round dense v-close-popup />
-                </q-card-section>
+                </q-card-section-->
 
-                <q-card-section class="q-pt-none">
+                <q-card-section class="">
                     <!--DynamicComponent :pageName="`pages/${tableDialogName}/Grid.vue`"></DynamicComponent-->
                     <DynamicComponent folder="pages" :file="name + '/Form.vue'" :key="name" :componentsProps="{action: formAction, primaryKeyValue: primaryKeyValue}"></DynamicComponent>
                 </q-card-section>
@@ -29,6 +48,8 @@
         <q-table
             :title="label"
             :rows="rows"
+            dense
+            separator="cell"
             class="no-box-shadow	"
             ref="tableRef"
             tabindex="0"
@@ -45,6 +66,7 @@
                     <span class="text-h6" >{{ label }}</span>
 
                     <q-btn
+                        size="sm"
                         v-for="(button, index) in buttonActions"
                         dense
                         outline
@@ -58,8 +80,9 @@
                         :label="button.label"
                         :icon="button.icon"
                     />
-
+    
                     <q-btn
+                        size="sm"
                         v-if="selected.length > 0"
                         v-for="(button, index) in buttonRowActions"
                         dense

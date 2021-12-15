@@ -1,22 +1,42 @@
 <template>
-  <div>
-      <q-card class="no-box-shadow">
+  <div class="no-box-shadow" style="margin: -16px">
 
         <q-dialog v-model="tableDialogAtivo" :maximized="maximizedToggle">
             <q-card :style=" maximizedToggle ? 'max-width: 99vw;' : 'max-width: 90vw;' " bordered>
-                <q-card-section class="row items-center q-pb-none">
+                
+                <q-bar class="bg-primary text-white">
+
+                    <q-icon name="laptop_chromebook" />
+
+                    <div>Barra.</div>
+
+                    <q-space />
+
+                    <q-btn dense round flat :icon=" maximizedToggle ? 'minimize' : 'crop_square' " @click="maximizedToggle = !maximizedToggle" :disable="false">
+                        <q-tooltip v-if="maximizedToggle" class="">Restaurar</q-tooltip>
+                        <q-tooltip v-else class="">Maximizar</q-tooltip>
+                    </q-btn>
+
+                    <q-btn icon="close" flat round dense v-close-popup>
+                        <q-tooltip class="">Fechar</q-tooltip>
+                    </q-btn>
+
+                </q-bar>
+
+
+                <!--q-card-section class="row items-center q-pb-none">
                     <q-space />
 
                     <q-btn dense flat :icon=" maximizedToggle ? 'minimize' : 'crop_square' " @click="maximizedToggle = !maximizedToggle" :disable="false">
                         <q-tooltip v-if="maximizedToggle" class="">Restaurar</q-tooltip>
-                        <q-tooltip v-else="maximizedToggle" class="">Maximizar</q-tooltip>
+                        <q-tooltip v-else class="">Maximizar</q-tooltip>
                     </q-btn>
 
                     <q-btn icon="close" flat round dense v-close-popup />
 
-                </q-card-section>
+                </q-card-section-->
 
-                <q-card-section class="q-pt-none">
+                <q-card-section class="">
                     <!--DynamicComponent :pageName="`pages/${tableDialogName}/Grid.vue`"></DynamicComponent-->
                     <DynamicComponent folder="pages" :file="tableDialogName + '/Grid.vue'" :finishFunction="getDialogResult" :key="tableDialogName" :componentsProps="{action: action}"></DynamicComponent>
                 </q-card-section>
@@ -173,8 +193,6 @@
                     <q-btn icon="check" rounded outline align="right" class="" color="positive" label="Confirmar" @click="confirmForm"/>
                 </div>
             </q-card-section>
-
-      </q-card>
   </div>
 </template>
 
