@@ -2,13 +2,12 @@
   <div>
       <Grid
         :name="tableName"
-        :rows="grupos"
+        :rows="data"
         :label="tableLabel"
         :primaryKey="primaryKey"
         :buttonActions="buttonActions"
         :buttonRowActions="buttonRowActions"
         :pagination="pagination"
-        :loading="loading"
         
         @update:pagination="
           pagination = $event,
@@ -20,7 +19,7 @@
 
 <script>
 import { defineComponent, onMounted, ref } from 'vue';
-import { getGroup } from '../../repositories/grupo.js'
+import { get } from '../../repositories/produto.js'
 import Grid from 'src/components/Grid.vue'
 
 
@@ -29,7 +28,7 @@ export default defineComponent({
   components: {Grid},
   setup() {
 
-    const grupos = ref([])
+    const data = ref([])
     const tableName = ref('')
     const tableLabel = ref('')
     const primaryKey = ref('')
@@ -42,23 +41,27 @@ export default defineComponent({
         rowsPerPage: 10,
         rowsNumber: 6
     })
-    const loading = ref(false)
 
     //const gruposColumns = ref([])
     const filter = ref('')
      
     async function getData(){
-        loading.value = true
-        let rs = await getGroup(pagination.value.page, pagination.value.rowsPerPage, pagination.value.sortBy, pagination.value.descending)
+        let rs = await get(pagination.value.page, pagination.value.rowsPerPage, pagination.value.sortBy, pagination.value.descending)
 
         tableName.value = rs.metadata.name
         tableLabel.value = rs.metadata.label
         primaryKey.value = rs.metadata.primaryKey
         buttonActions.value = rs.metadata.buttonActions
         buttonRowActions.value = rs.metadata.buttonRowActions
-        
-        grupos.value = rs.results
-        loading.value = false
+        /*
+        pagination.value.sortBy = rs.metadata.sortBy
+        pagination.value.descending = rs.metadata.descending
+        pagination.value.page = rs.metadata.pagination.page
+        pagination.value.rowsPerPage = rs.metadata.pagination.rowsPerPage
+        pagination.value.rowsNumber = rs.metadata.pagination.rowsNumber
+        */
+
+        data.value = rs.results
     }
 
     onMounted( async () => {
@@ -66,7 +69,7 @@ export default defineComponent({
     } )
 
     return{
-        grupos,
+        data,
         filter,
         tableName,
         tableLabel,
@@ -74,8 +77,7 @@ export default defineComponent({
         buttonActions,
         buttonRowActions,
         pagination,
-        getData,
-        loading
+        getData
     }
   }
 })

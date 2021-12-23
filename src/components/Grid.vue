@@ -1,15 +1,15 @@
 <template>
   <div class="no-box-shadow" style="margin: -16px">
 
-        <q-dialog v-model="showDialogButton" :maximized="maximizedToggle">
+        <q-dialog v-model="showDialogButton" :maximized="maximizedToggle" >
             <q-card :style=" maximizedToggle ? 'max-width: 99vw;' : 'max-width: 90vw;' " bordered>
 
                 <q-bar class="bg-primary text-white">
 
                     <q-icon name="laptop_chromebook" />
 
-                    <div>Barra</div>
-
+                    <!--div>Descricao.</div-->
+                    
                     <q-space />
 
                     <q-btn dense round flat :icon=" maximizedToggle ? 'minimize' : 'crop_square' " @click="maximizedToggle = !maximizedToggle" :disable="false">
@@ -50,13 +50,22 @@
             :rows="rows"
             dense
             separator="cell"
-            class="no-box-shadow	"
+            class="no-box-shadow"
             ref="tableRef"
             tabindex="0"
             :row-key="primaryKey"
             selection="single"
             v-model:selected="selected"
+            v-model:pagination="pagination"
             :filter="filter"
+            @request="onRequest"
+            binary-state-sort
+
+            @focusin="activateNavigation"
+            @focusout="deactivateNavigation"
+            @keydown="onKey"
+
+            :loading="loading"
 
         >
             <template v-slot:top-left>
@@ -130,7 +139,7 @@
 <script>
 //Vue 3 is having a special function to define these async functions
 
-import { ref, computed, nextTick } from 'vue'
+import { ref, computed, nextTick, watch } from 'vue'
 import { useStore } from 'vuex'
 
 import DynamicComponent from './DynamicComponent.vue'
@@ -148,27 +157,71 @@ export default {
     buttonActions: { type: Array, default: [] },
     buttonRowActions: { type: Array, default: [] },
     rows: { type: Array, default: [] }, // create || edit
+    loading: { type: Boolean, default: false },
+
+    pagination: { type: Object }, //emit event
+    //selected: { type: Array, default: [] } //emit event
+    /*
+    page: { type: Number },
+    rowsPerPage: { type: Number },
+    rowsNumber: { type: Number }
+    */
 },
-setup(props) {
+emits: ['update:pagination', 'update:selected'],
+setup(props, { emit }) {
     const $store = useStore()
     const tableRef = ref(null)
 
-    //const id = Date.now() //id unico
+    //const selected = ref(props.selected)
 
-    //console.log(id)
+    //const pagination = ref(props.pagination)
+
+    function onRequest(tableProps){
+        //console.log('update:pagination')
+        console.log('props table')
+        console.log(tableProps)
+        //emit("update:pagination", props.pagination);
+        emit("update:pagination", tableProps.pagination);
+    }
 
     const showDialogButton = ref(false)
     const formAction = ref('')
     const primaryKeyValue = ref('')
     const maximizedToggle = ref(false)
 
-    //const selected = ref([])
+    const navigationActive = ref(false)
+
+
     /*
-    const selected = computed({
-        get: () =>  $store.state.caixaSelecao.singleRowSelected,
-        set: val => $store.commit('caixaSelecao/setSingleRowSelected', val)
-    })
+    watch(selected, (currentValue, oldValue) => {
+        //console.log(oldValue);
+        //console.log(currentValue);
+        console.log("update:selected", selected.value)
+        emit("update:selected", selected.value)
+    });
     */
+
+    //const paginationWatch = ref(props.pagination)
+
+    /*
+    watch(paginationWatch, (currentValue, oldValue) => {
+        //console.log(oldValue);
+        //console.log(currentValue);
+        console.log("update:pagination", props.pagination)
+        emit("update:pagination", props.pagination);
+    });
+    */
+   
+
+    //const selected = ref([])
+
+    function activateNavigation () {
+        navigationActive.value = true
+    }
+
+    function deactivateNavigation () {
+        navigationActive.value = false
+    }
 
     
     const selected = computed({
@@ -191,6 +244,98 @@ setup(props) {
             //$store.commit('caixaSelecao/setSingleRowSelected', {table: id, primaryKeyName: props.primaryKey,  row: val})
         }
     })
+
+    async function onKey (evt) {
+        if (
+          navigationActive.value !== true ||
+          [ 33, 34, 35, 36, 38, 40 ].indexOf(evt.keyCode) === -1 ||
+          tableRef.value === null
+        ) {
+          return
+        }
+
+        evt.preventDefault()
+
+        const { computedRowsNumber, computedRows } = tableRef.value
+
+        if (computedRows.length === 0) {
+          return
+        }
+
+        const currentIndex = selected.value.length > 0 ? computedRows.indexOf(selected.value[ 0 ]) : -1
+        const currentPage = props.pagination.page
+        const rowsPerPage = props.pagination.rowsPerPage === 0 ? computedRowsNumber : props.pagination.rowsPerPage
+        const lastIndex = computedRows.length - 1
+        const lastPage = Math.ceil(computedRowsNumber / rowsPerPage)
+
+        let index = currentIndex
+        let page = currentPage
+
+        switch (evt.keyCode) {
+          /*  
+          case 36: // Home
+            page = 1
+            index = 0
+            break
+          case 35: // End
+            page = lastPage
+            index = rowsPerPage - 1
+            break
+          case 33: // PageUp
+            page = currentPage <= 1 ? lastPage : currentPage - 1
+            if (index < 0) {
+              index = 0
+            }
+            break
+          case 34: // PageDown
+            page = currentPage >= lastPage ? 1 : currentPage + 1
+            if (index < 0) {
+              index = rowsPerPage - 1
+            }
+            break
+           */
+          case 38: // ArrowUp
+            if (currentIndex <= 0) {
+              page = currentPage <= 1 ? lastPage : currentPage - 1
+              index = rowsPerPage - 1
+            }
+            else {
+              index = currentIndex - 1
+            }
+            break
+          case 40: // ArrowDown
+            if (currentIndex >= lastIndex) {
+              page = currentPage >= lastPage ? 1 : currentPage + 1
+              index = 0
+            }
+            else {
+              index = currentIndex + 1
+            }
+            break
+        }
+        //console.log(props.pagination)
+        
+        if (page !== props.pagination.page) {
+          props.pagination.page = page
+          emit("update:pagination", props.pagination)
+
+          //tem que esperar o evento do emit para dar certo, ta selecionando dados da paginacao anterior
+          setTimeout( () => {
+            nextTick(() => {
+                const { computedRows } = tableRef.value
+                //console.log('tableRef.value')
+                //console.log(index)
+                //console.log(computedRows)
+                selected.value = [computedRows[ Math.min(index, computedRows.length - 1) ]]
+            })
+          }, 300)
+        }
+        else {
+          selected.value = [computedRows[ index ]]
+        }
+      }
+    
+    
     
     return {
       tableRef,
@@ -200,8 +345,13 @@ setup(props) {
       showDialogButton,
       formAction,
       primaryKeyValue,
-      maximizedToggle
-      
+      maximizedToggle,
+      //pagination,
+
+      onRequest,
+      activateNavigation,
+      deactivateNavigation,
+      onKey
     }
 }
 
@@ -210,9 +360,7 @@ setup(props) {
 
 <style >
     .my-focused-table{
-        
         box-shadow: 0 0 4px 4px #ccc;
         outline: 0
-        
     }
 </style>

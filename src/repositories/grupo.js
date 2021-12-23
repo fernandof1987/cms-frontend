@@ -1,7 +1,10 @@
 import { api } from 'boot/axios'
 
-export async function getGroup(){
-    let rs = await api.get('/grupo')
+export async function getGroup(page = 1, limit = 10, sortBy = 'id', descending = false){
+    let url = `/grupo?page=${page}&limit=${limit}&sortBy=${sortBy}&descending=${descending}`
+    //console.log('url')
+    //console.log(url)
+    let rs = await api.get(url)
     //console.log(rs.data) 
     return rs.data
 }

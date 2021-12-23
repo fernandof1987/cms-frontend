@@ -7,6 +7,13 @@
         :primaryKey="primaryKey"
         :buttonActions="buttonActions"
         :buttonRowActions="buttonRowActions"
+
+        :pagination="pagination"
+        @update:pagination="
+          pagination = $event,
+          getData()
+        "
+
       ></Grid>
   </div>
 </template>
@@ -28,19 +35,43 @@ export default defineComponent({
     const buttonActions = ref([])
     const buttonRowActions = ref([])
 
+    const pagination = ref({
+        sortBy: 'id',
+        descending: true,
+        page: 1,
+        rowsPerPage: 10,
+        rowsNumber: 6
+    })
+
+
     //const gruposColumns = ref([])
     const filter = ref('')
-     
-    onMounted( async () => {
-        //console.log('onmountd')
-        let rs = await getUser()
-        //console.log(rs)
+
+    async function getData(){
+        let rs = await getUser(pagination.value.page, pagination.value.rowsPerPage, pagination.value.sortBy, pagination.value.descending)
+
         tableName.value = rs.metadata.name
         tableLabel.value = rs.metadata.label
         primaryKey.value = rs.metadata.primaryKey
         buttonActions.value = rs.metadata.buttonActions
         buttonRowActions.value = rs.metadata.buttonRowActions
+        /*
+        pagination.value = {
+          sortBy: "id",
+          descending: true,
+          page: rs.metadata.pagination.page,
+          rowsPerPage: rs.metadata.pagination.rowsPerPage,
+          rowsNumber: rs.metadata.pagination.rowsNumber
+        }
+
+        */
+
         usuarios.value = rs.results
+
+    }
+     
+    onMounted( async () => {
+      getData()
     } )
 
     return{
@@ -50,7 +81,9 @@ export default defineComponent({
         tableLabel,
         primaryKey,
         buttonActions,
-        buttonRowActions
+        buttonRowActions,
+        getData,
+        pagination
     }
   }
 })

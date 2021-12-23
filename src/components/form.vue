@@ -8,7 +8,7 @@
 
                     <q-icon name="laptop_chromebook" />
 
-                    <div>Barra.</div>
+                    <!--div>Descricao.</div-->
 
                     <q-space />
 
@@ -38,13 +38,23 @@
 
                 <q-card-section class="">
                     <!--DynamicComponent :pageName="`pages/${tableDialogName}/Grid.vue`"></DynamicComponent-->
-                    <DynamicComponent folder="pages" :file="tableDialogName + '/Grid.vue'" :finishFunction="getDialogResult" :key="tableDialogName" :componentsProps="{action: action}"></DynamicComponent>
+                    <DynamicComponent  folder="pages" :file="tableDialogName + '/Grid.vue'" :finishFunction="getDialogResult" :key="tableDialogName" :componentsProps="{action: action, selected: selected}"></DynamicComponent>
                 </q-card-section>
 
-                <q-card-actions align="right">
-                    <q-btn flat label="Ok" color="secondary" v-close-popup @click="getDialogResult" />
+                    <!--q-btn flat label="Ok" color="secondary" v-close-popup @click="getDialogResult" /-->
                     <!--q-btn flat label="OK" color="primary" v-close-popup /-->
-                </q-card-actions>
+
+                    <q-bar >
+                        <q-space />
+                        <q-btn
+                            flat label="Confirma"
+                            icon="check"
+                            color="primary"
+                            v-close-popup
+                            @click="getDialogResult"
+                        />
+                    </q-bar>
+
             </q-card>
         </q-dialog>
 
@@ -238,6 +248,8 @@ export default defineComponent({
         const columnDialogName = ref(null)
         const maximizedToggle = ref(false)
 
+        //const selected = ref([])
+        
         const selected = computed({
             get: () => {                
                 if($store.state.caixaSelecao.singleRowSelected.length > 0){
@@ -256,17 +268,14 @@ export default defineComponent({
                 //$store.commit('caixaSelecao/setSingleRowSelected', {table: tableDialogName.value, primaryKeyName: 'id',  row: val[0]})
             }
         })
+        
 
         function getDialogResult(){
+            //console.log('selected')
+            //console.log(selected.value)
             let inputName = columnDialogName.value
-            //console.log('inputName: ', inputName)
             let rs = $store.state.caixaSelecao.singleRowSelected.filter( el => el.table == tableDialogName.value )[0]['row']
-            //console.log('rs')
-            //console.log(rs)
-            //console.log('formModel.value')
-            //console.log(formModel.value)
             formModel.value[inputName] = rs[0].id
-            //console.log(formModel.value[inputName])
         }
 
         function importTabelaConsulta(name){

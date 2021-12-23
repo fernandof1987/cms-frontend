@@ -20,13 +20,14 @@
         />
 
         <q-toolbar-title>
-          <img src="~assets/logo_cofema_branco.png" style="width: 120px; margin-top: 6px"/>
+          <img src="~assets/logo_cofema_branco.png" style="width: 100px; margin-top: 6px"/>
         </q-toolbar-title>
         <q-space />
 
         <q-btn
             flat
             round
+            dense
             :color="$q.dark.isActive ? 'black' : 'white' "
             :icon="$q.dark.isActive ? 'nightlight_round' : 'brightness_low'"
             @click="$q.dark.toggle()"
@@ -55,7 +56,7 @@
             </q-popup-proxy>
           </q-btn>
 
-          <q-btn-dropdown stretch flat label="Usuario" icon="account_circle">
+          <q-btn-dropdown dense stretch flat label="Usuario" icon="account_circle">
             <q-list>
               <q-item-label header>Quasar v{{ $q.version }}</q-item-label>
               <q-item-label header>Folders</q-item-label>
@@ -100,32 +101,25 @@
       @mouseout="miniState = true"
       :mini-to-overlay="true"
     >
-      <!--q-input label="Filtro" icon="search" dense>
-        <template v-slot:append>
-          <q-icon name="search" avatar/>
-        </template>
-      </q-input-->
+    
+        <q-list bordered class="no-border" style="font-size: 0.9em">
 
-  
-
-      <q-list bordered class="no-border">
-
-        <q-item >
-          <q-item-section avatar>
-            <q-icon name="search" />
-          </q-item-section>
-          <q-item-section>
-            <q-input label="Filtro" filled square icon="search" dense style="margin-top:-8px"/>
-          </q-item-section>
-        </q-item>
-          
-        <LeftMenuItem
-          v-for="(item, k) in menuContent"
-          :key="k"
-          v-bind="item"
-        >
-        </LeftMenuItem>
-      </q-list>
+          <q-item >
+            <q-item-section avatar >
+              <q-icon name="search" font-size="52px"/>
+            </q-item-section>
+            <q-item-section>
+              <q-input label="Filtro" filled square icon="search" dense style="margin-top:-8px"/>
+            </q-item-section>
+          </q-item>
+            
+          <LeftMenuItem
+            v-for="(item, k) in menuContent"
+            :key="k"
+            v-bind="item"
+          >
+          </LeftMenuItem>
+        </q-list>
 
     </q-drawer>
 
@@ -163,7 +157,7 @@ const menuContent = [
     child: [
       {
         label: 'Usuários',
-        icon: 'people',
+        icon: 'person',
         link: '/#/usuarios'
         /*
         child: [
@@ -172,17 +166,10 @@ const menuContent = [
         ]
         */
       },
-      {
-        label: 'Grupos',
-        icon: 'groups',
-        link: '/#/grupos'
-        /*
-        child: [
-          { label: 'Cadastro', icon: 'assignment', link: '/#/grupos/create' },
-          { label: 'Lista', icon: 'list', link: '/#/grupos' },
-        ]
-        */
-      }
+      { label: 'Grupos', icon: 'groups', link: '/#/grupos' },
+      { label: 'Produtos', icon: 'card_giftcard', link: '/#/produtos' },
+      { label: 'Fornecedores', icon: 'local_shipping', link: '/#/fornecedores' },
+      { label: 'Clientes', icon: 'people', link: '/#/clientes' },
     ]
   },
   { label: 'login',     icon: 'login', link: '/#/login' },
@@ -212,10 +199,19 @@ const menuContent = [
                         label: 'Home',
                         icon: 'home',
                         link: "/#"
+                      },
+                      {
+                        label: 'Home2',
+                        icon: 'home',
+                        link: "/#"
                       }
                   ]
               }
             ]
+        },
+        {
+          label: 'Folder 2B',
+          icon: 'folder',
         }
     ]
   },

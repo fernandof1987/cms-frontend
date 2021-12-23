@@ -1,7 +1,9 @@
 import { api } from 'boot/axios'
 
-export async function getUser(){
-    let rs = await api.get('/usuario')
+export async function getUser(page = 1, limit = 10, sortBy = 'id', descending = true){
+    let url = `/usuario?page=${page}&limit=${limit}&sortBy=${sortBy}&descending=${descending}`
+    //let url = `/usuario?page=${page}&limit=${limit}`
+    let rs = await api.get(url)
     //console.log(rs.data) 
     return rs.data
 }

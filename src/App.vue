@@ -13,7 +13,8 @@ export default defineComponent({
     
     onMounted( () => {
       $q.dark.set(true)
-      document.body.style.setProperty('--q-negative', '#FF334C')
+      document.body.style.setProperty('--q-negative', '#FF334C')     
+       
       /*
       if($q.dark.isActive){
           document.body.style.setProperty('--q-negative', '#FF334C')

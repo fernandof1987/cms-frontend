@@ -10,6 +10,9 @@ const routes = [
       //{ path: '/usuarios/create', component: () => import('pages/usuarios/Cadastro.vue') },
 
       { path: '/grupos', component: () => import('src/pages/grupos/Grid.vue') },
+      { path: '/produtos', component: () => import('src/pages/produtos/Grid.vue') },
+      { path: '/fornecedores', component: () => import('src/pages/fornecedores/Grid.vue') },
+      { path: '/clientes', component: () => import('src/pages/clientes/Grid.vue') },
       //{ path: '/grupos/create', component: () => import('pages/grupos/Cadastro.vue') },
       //{ path: '/grupos/edit', component: () => import('pages/grupos/Cadastro.vue'), props: true },
 

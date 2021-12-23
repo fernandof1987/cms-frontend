@@ -1,16 +1,21 @@
 <template>
     <q-expansion-item v-if="child" dense-toggle
-        :content-inset-level="0.1"
+        :content-inset-level="0.05"
         expand-separator
         :icon="icon"
         :label="label"
         dense
+        style=""
     >
         <LeftMenuItem
           v-for="(item, k) in child"
           :key="k"
           v-bind="item"
-          :style="$q.dark.isActive ? 'background-color: rgba(255, 255, 255, 0.08)' : 'background-color: rgba(0, 0, 0, 0.08)' "
+          :style="
+            $q.dark.isActive ?
+            'background-color: rgba(255, 255, 255, 0.08); border-left: 1px solid rgba(255, 255, 255, 0.5);' :
+            'background-color: rgba(0, 0, 0, 0.08); border-left: 1px solid rgba(0, 0, 0, 0.5);'
+          "
         ></LeftMenuItem>
     </q-expansion-item>
 
@@ -63,3 +68,17 @@ export default defineComponent({
   }
 })
 </script>
+
+<style>
+
+.large-icon i.q-icon {
+   #font-size: 24px;
+   #box-shadow: -2px -2px -2px #ccc
+}
+ 
+
+.borda-ativa{
+  border: 1px solid red
+}
+
+</style>
