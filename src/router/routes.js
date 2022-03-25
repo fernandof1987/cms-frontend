@@ -1,10 +1,25 @@
 
 const routes = [
+  
+  {
+    path: '/login',
+    component: () => import('layouts/LoginLayout.vue'),
+    children: [
+      {
+        path: '',
+        component: () => import('pages/login/Index.vue'),
+        //meta: { noAuthenticate: true }
+      },
+    ]
+  },
+
   {
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
     children: [
       { path: '', component: () => import('pages/Index.vue') },
+
+      //{ path: '/login', component: () => import('pages/login/Index.vue') },
 
       { path: '/usuarios', component: () => import('src/pages/usuarios/Grid.vue') },
       //{ path: '/usuarios/create', component: () => import('pages/usuarios/Cadastro.vue') },
@@ -18,7 +33,6 @@ const routes = [
 
       { path: '/embedded', component: () => import('pages/embedded/Index.vue') },
 
-      { path: '/login', component: () => import('pages/login/Index.vue') },
     ]
   },
 

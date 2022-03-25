@@ -1,0 +1,11 @@
+<div>
+    <Form
+      :action="action"
+      :primaryKeyValue="primaryKeyValue"
+      :form="form"
+      :submit="submitFunction"
+      v-if="form"
+      @update:table="sendResfreshGrid($event)"
+    >
+    </Form>
+</div>

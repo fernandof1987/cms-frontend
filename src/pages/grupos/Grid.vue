@@ -1,83 +1,8 @@
-<template>
-  <div>
-      <Grid
-        :name="tableName"
-        :rows="grupos"
-        :label="tableLabel"
-        :primaryKey="primaryKey"
-        :buttonActions="buttonActions"
-        :buttonRowActions="buttonRowActions"
-        :pagination="pagination"
-        :loading="loading"
-        
-        @update:pagination="
-          pagination = $event,
-          getData()
-        "
-      ></Grid>
-  </div>
-</template>
+<template src="src/templates/grid.html" />
 
 <script>
-import { defineComponent, onMounted, ref } from 'vue';
-import { getGroup } from '../../repositories/grupo.js'
-import Grid from 'src/components/Grid.vue'
-
-
-export default defineComponent({
-  name: 'GrupoGrid',
-  components: {Grid},
-  setup() {
-
-    const grupos = ref([])
-    const tableName = ref('')
-    const tableLabel = ref('')
-    const primaryKey = ref('')
-    const buttonActions = ref([])
-    const buttonRowActions = ref([])
-    const pagination = ref({
-        sortBy: 'id',
-        descending: true,
-        page: 1,
-        rowsPerPage: 10,
-        rowsNumber: 6
-    })
-    const loading = ref(false)
-
-    //const gruposColumns = ref([])
-    const filter = ref('')
-     
-    async function getData(){
-        loading.value = true
-        let rs = await getGroup(pagination.value.page, pagination.value.rowsPerPage, pagination.value.sortBy, pagination.value.descending)
-
-        tableName.value = rs.metadata.name
-        tableLabel.value = rs.metadata.label
-        primaryKey.value = rs.metadata.primaryKey
-        buttonActions.value = rs.metadata.buttonActions
-        buttonRowActions.value = rs.metadata.buttonRowActions
-        
-        grupos.value = rs.results
-        loading.value = false
-    }
-
-    onMounted( async () => {
-        getData()
-    } )
-
-    return{
-        grupos,
-        filter,
-        tableName,
-        tableLabel,
-        primaryKey,
-        buttonActions,
-        buttonRowActions,
-        pagination,
-        getData,
-        loading
-    }
-  }
-})
+  import repository from "../../repositories/grupo.js";
+  import GridModel from "src/components/GridModel.js";
+  export default GridModel({componentName: 'GrupoGrid', repository})
 </script>
 

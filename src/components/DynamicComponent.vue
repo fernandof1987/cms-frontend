@@ -30,7 +30,10 @@ export default {
         comp () {
 
             //"solucao" para conseguir o import dinamico variavel no path inteiro da pau no webpack
-            if(this.folder == 'components') return defineAsyncComponent(() => import(`src/components/${this.file}`))
+            if(this.folder == 'components'){
+                return defineAsyncComponent(() => import(`src/components/${this.file}`))
+            }
+            
             if(this.folder == 'pages') {
                 //console.log( defineAsyncComponent(() => import(`src/pages/${this.file}`)) )
                 return defineAsyncComponent(() => import(`src/pages/${this.file}`))

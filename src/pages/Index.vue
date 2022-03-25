@@ -1,7 +1,7 @@
 <template>
   <q-page :class="''/*flex flex-center*/" style="msrgim: 0; padding: 0">
   
-      <img src="https://www.cofema.com.br/Content/image/empresa/unidade_sp.jpg" style="width: 100%">
+      <!--img src="https://www.cofema.com.br/Content/image/empresa/unidade_sp.jpg" style="width: 100%"-->
 
     <!--q-parallax>
       <template v-slot:media>

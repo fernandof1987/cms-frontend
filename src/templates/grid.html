@@ -1,0 +1,17 @@
+<div>
+    <Grid
+      :name="tableName"
+      :rows="rows"
+      :label="tableLabel"
+      :primaryKey="primaryKey"
+      :buttonActions="buttonActions"
+      :buttonRowActions="buttonRowActions"
+      :pagination="pagination"
+      :loading="loading"
+      @update:pagination="(pagination = $event), getData()"
+      @update:fieldFilters="(fieldFilters = $event), getData()"
+      :fieldFilters="fieldFilters"
+      :columns="columns"
+      @update:table="teste($event)"
+    ></Grid>
+  </div>

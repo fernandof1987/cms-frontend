@@ -6,9 +6,10 @@
                 
                 <q-bar class="bg-primary text-white">
 
-                    <q-icon name="laptop_chromebook" />
+                    <!--q-icon name="laptop_chromebook" /--> &nbsp;
 
                     <!--div>Descricao.</div-->
+                    <!--{{ tableDialogName}}-->
 
                     <q-space />
 
@@ -22,19 +23,6 @@
                     </q-btn>
 
                 </q-bar>
-
-
-                <!--q-card-section class="row items-center q-pb-none">
-                    <q-space />
-
-                    <q-btn dense flat :icon=" maximizedToggle ? 'minimize' : 'crop_square' " @click="maximizedToggle = !maximizedToggle" :disable="false">
-                        <q-tooltip v-if="maximizedToggle" class="">Restaurar</q-tooltip>
-                        <q-tooltip v-else class="">Maximizar</q-tooltip>
-                    </q-btn>
-
-                    <q-btn icon="close" flat round dense v-close-popup />
-
-                </q-card-section-->
 
                 <q-card-section class="">
                     <!--DynamicComponent :pageName="`pages/${tableDialogName}/Grid.vue`"></DynamicComponent-->
@@ -228,7 +216,8 @@ export default defineComponent({
     formValues: [], //only edit
     submit: { type: Function  }
   },
-  setup(props) {
+  emits: ["update:table"],
+  setup(props, { emit }) {
         const $q = useQuasar()
         const $store = useStore()
         
@@ -269,7 +258,6 @@ export default defineComponent({
             }
         })
         
-
         function getDialogResult(){
             //console.log('selected')
             //console.log(selected.value)
@@ -371,14 +359,20 @@ export default defineComponent({
 
                 if(!rs) return
 
-                if(rs.length > 0){
+                if(rs.length > 0 || rs.status == 'success'){
                     let msg = `Formulário enviado com sucesso!`
                     $q.notify({message: msg, color: 'primary', icon: 'mail'})
+
+                    emit("update:table", true);
+                    createFormModel()//limpa formulario
+                    
+                    //tableDialogAtivo.value = false
+
                 }else{
                     let msg = `Algo deu errado`
                     $q.notify({message: msg, color: 'negative', icon: 'info'})
                 }
-                createFormModel()//limpa formulario
+                //createFormModel()//limpa formulario
                 validationErrorFields.value = []//limpa erros de validação
                 //tableDialogAtivo.value = false
             }else{

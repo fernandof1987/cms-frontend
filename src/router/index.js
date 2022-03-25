@@ -2,6 +2,8 @@ import { route } from 'quasar/wrappers'
 import { createRouter, createMemoryHistory, createWebHistory, createWebHashHistory } from 'vue-router'
 import routes from './routes'
 
+import { LocalStorage } from 'quasar'
+
 /*
  * If not building with SSR mode, you can
  * directly export the Router instantiation;
@@ -25,6 +27,29 @@ export default route(function (/* { store, ssrContext } */) {
     // quasar.conf.js -> build -> publicPath
     history: createHistory(process.env.MODE === 'ssr' ? void 0 : process.env.VUE_ROUTER_BASE)
   })
+
+  Router.beforeEach((to, from, next) => {
+    //console.log('aqui!!!!!!!!!!!!!!!!!!!!')
+    //console.log(to)
+    //console.log(to.meta.noAuthenticate)
+    //checa se rota precisa de autenticaçãp
+    //next()
+    
+    if(to.path != '/login') {
+
+      let login = LocalStorage.getItem('login')
+  
+      if(login && login.token){
+          next()
+      }else{
+          router.push('/login')
+      }
+      }else{
+        next()
+    }
+    
+  })
+
 
   return Router
 })

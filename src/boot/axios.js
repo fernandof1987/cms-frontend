@@ -1,6 +1,11 @@
 import { boot } from 'quasar/wrappers'
 import axios from 'axios'
 
+//import { useRouter } from 'vue-router'
+//const router = useRouter()
+//import { router } from '../router/index.js'
+//import router from 'router'
+
 // Be careful when using SSR for cross-request state pollution
 // due to creating a Singleton instance here;
 // If any client changes this (global) instance, it might be a
@@ -8,6 +13,20 @@ import axios from 'axios'
 // "export default () => {}" function below (which runs individually
 // for each client)
 const api = axios.create({ baseURL: 'http://localhost:3000/api/v1' })
+
+/*
+api.interceptors.response.use(response => {
+  console.log('response')
+  console.log(response)
+  if(response.data.metadata === 'token' && response.data.success == "false" ){
+    //router().push('/login');
+    //let router = Router() 
+    router.push('/login')
+    console.log("router.push('/login')")
+  }
+  return response
+})
+*/
 
 export default boot(({ app }) => {
   // for use inside Vue files (Options API) through this.$axios and this.$api

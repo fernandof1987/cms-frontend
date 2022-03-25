@@ -24,6 +24,14 @@
         </q-toolbar-title>
         <q-space />
 
+        
+        <q-btn
+            flat
+            round
+            dense
+            icon="color_lens"
+          />
+
         <q-btn
             flat
             round
