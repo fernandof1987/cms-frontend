@@ -28,6 +28,7 @@ export default route(function (/* { store, ssrContext } */) {
     history: createHistory(process.env.MODE === 'ssr' ? void 0 : process.env.VUE_ROUTER_BASE)
   })
 
+  /*
   Router.beforeEach((to, from, next) => {
     //console.log('aqui!!!!!!!!!!!!!!!!!!!!')
     //console.log(to)
@@ -49,7 +50,7 @@ export default route(function (/* { store, ssrContext } */) {
     }
     
   })
-
+  */
 
   return Router
 })

@@ -195,7 +195,7 @@
 </template>
 
 <script>
-import { defineComponent, onMounted, ref, computed, defineAsyncComponent  } from 'vue'
+import { defineComponent, onMounted, ref, computed, defineAsyncComponent, getCurrentInstance   } from 'vue'
 import { copyToClipboard, useQuasar, AppFullscreen  } from 'quasar'
 import DynamicComponent from './DynamicComponent.vue'
 import { useStore } from 'vuex'
@@ -214,7 +214,8 @@ export default defineComponent({
     filterFields: { type: Boolean, default: true },
     displayInline: { type: Boolean, default: true },
     formValues: [], //only edit
-    submit: { type: Function  }
+    submit: { type: Function  },
+    tableIdSelection: { type: String },
   },
   emits: ["update:table"],
   setup(props, { emit }) {
@@ -241,10 +242,11 @@ export default defineComponent({
         
         const selected = computed({
             get: () => {                
-                if($store.state.caixaSelecao.singleRowSelected.length > 0){
-                    let rs = $store.state.caixaSelecao.singleRowSelected.filter( el => el.table == tableDialogName.value )
+                //console.log('props.tableIdSelection', props.tableIdSelection)
+                if($store.state.caixaSelecao.singleRowSelected.length > 0 && props.tableIdSelection){
+                    let rs = $store.state.caixaSelecao.singleRowSelected.filter( el => el.id == props.tableIdSelection.value )
                     if(rs.lenght > 0 && rs[0]['row']){
-                        return $store.state.caixaSelecao.singleRowSelected.filter( el => el.table == tableDialogName.value )[0]['row']
+                        return $store.state.caixaSelecao.singleRowSelected.filter( el => el.id == props.tableIdSelection.value )[0]['row']
                     }else{
                         return []
                     }
@@ -253,16 +255,22 @@ export default defineComponent({
                 }
             },
             set: val => {
-                $store.commit('caixaSelecao/setSingleRowSelected', val)
+                //$store.commit('caixaSelecao/setSingleRowSelected', {...val, id: props.tableIdSelection.value})
                 //$store.commit('caixaSelecao/setSingleRowSelected', {table: tableDialogName.value, primaryKeyName: 'id',  row: val[0]})
             }
         })
         
         function getDialogResult(){
-            //console.log('selected')
-            //console.log(selected.value)
+            
+            //console.log('props.tableIdSelection', props.tableIdSelection)
+            //console.log('$store.state.caixaSelecao.singleRowSelected', $store.state.caixaSelecao.singleRowSelected)
+
             let inputName = columnDialogName.value
-            let rs = $store.state.caixaSelecao.singleRowSelected.filter( el => el.table == tableDialogName.value )[0]['row']
+            let rs = $store.state.caixaSelecao.singleRowSelected.filter( el => el.table == tableDialogName.value  )//[0]['row']
+            rs = rs[rs.length-1]['row']
+
+        
+            console.log('rs', rs)
             formModel.value[inputName] = rs[0].id
         }
 
@@ -272,6 +280,11 @@ export default defineComponent({
             //tabelaConsulta.value = defineAsyncComponent(() => import('../pages/grupos/Index.vue'))
         }
         onMounted( async() => {
+            //console.log('parent', this.$parent)
+            //const instance = getCurrentInstance();
+            //console.log("parent");
+            //console.log(instance.parent.parent);
+
             //let rs = await getForm()
             //console.log('props', props)
             //console.log('props.__form', props.__form)

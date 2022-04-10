@@ -1,5 +1,5 @@
 <template>
-    <q-expansion-item v-if="child" dense-toggle
+    <q-expansion-item v-if="children && tipo == 1" dense-toggle
         :content-inset-level="0.05"
         expand-separator
         :icon="icon"
@@ -8,7 +8,7 @@
         style=""
     >
         <LeftMenuItem
-          v-for="(item, k) in child"
+          v-for="(item, k) in children"
           :key="k"
           v-bind="item"
           :style="
@@ -57,11 +57,15 @@ export default defineComponent({
       type: String,
       default: ''
     },
-    child: {
+    tipo: {
+      type: Number,
+      default: ''
+    },
+    children: {
         type: Array,
         default: null
     },
-    isChild: {
+    isChildren: {
       type: Boolean,
       default: false
     }

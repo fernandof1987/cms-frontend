@@ -2,14 +2,15 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
-			"type": "totvs_language_debug",
+			"type": "chrome",
 			"request": "launch",
-			"name": "TOTVS Language Debug",
-			"program": "${command:AskForProgramName}",
-			"cwb": "${workspaceFolder}",
-			"smartclientBin": "C:/totvs/bin/smartclient/smartclient.exe",
-			"isMultiSession": true,
-			"enableTableSync": true
+			"name": "Quasar App: chrome",
+			"url": "http://localhost:8080",
+			"webRoot": "${workspaceFolder}/src",
+			"breakOnLoad": true,
+			"sourceMapPathOverrides": {
+				"webpack://package-name/./src/*": "${webRoot}/*"
+			}
 		}
 	]
 }

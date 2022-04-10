@@ -32,6 +32,10 @@ const routes = [
       //{ path: '/grupos/edit', component: () => import('pages/grupos/Cadastro.vue'), props: true },
 
       { path: '/embedded', component: () => import('pages/embedded/Index.vue') },
+      { path: '/menu', component: () => import('pages/menu/Index.vue') },
+
+      { path: '/menu_table', component: () => import('pages/menu/Grid.vue') },
+      { path: '/grupo_menu', component: () => import('pages/grupo_menu/Index.vue') },
 
     ]
   },

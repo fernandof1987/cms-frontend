@@ -1,5 +1,57 @@
 <template>
   <div class="no-box-shadow" style="margin: -16px">
+
+
+    <q-dialog v-model="filtroAvancadoDialog">
+
+      <q-card style= 'max-width: 50vw;' bordered >
+          <q-bar class="bg-primary text-white">
+
+            <div class="text-h6">Filtro Avançado</div>
+
+            <q-space />
+
+            <q-btn
+              dense
+              round
+              flat
+              :icon="maximizedToggle ? 'minimize' : 'crop_square'"
+              @click="maximizedToggle = !maximizedToggle"
+              :disable="false"
+            >
+              <q-tooltip v-if="maximizedToggle" class="">Restaurar</q-tooltip>
+              <q-tooltip v-else class="">Maximizar</q-tooltip>
+            </q-btn>
+            
+            <q-btn icon="close" flat round dense v-close-popup>
+              <q-tooltip class="">Fechar</q-tooltip>
+            </q-btn>
+
+          </q-bar>
+  
+
+          <q-card-section class="q-pt-none ">
+            (<br />
+              Filtro De: <q-input outlined rounded  dense type="text" />
+              Filtro Ate: <q-input outlined rounded dense type="text" />
+            )<br />
+
+            ou<br />
+
+            (<br />
+              Filtro De: <q-input outlined rounded dense type="text" />
+              Filtro Ate: <q-input outlined rounded dense type="text" />
+            )<br />          </q-card-section>
+
+          <q-card-actions align="right" class="bg-white text-teal">
+            <q-btn flat label="OK" v-close-popup />
+          </q-card-actions>
+        </q-card>
+      
+
+
+                  
+    </q-dialog>
     
     <q-dialog v-model="showDialogButton" :maximized="maximizedToggle">
       <q-card
@@ -40,6 +92,7 @@
             :componentsProps="{
               action: formAction,
               primaryKeyValue: primaryKeyValue,
+              tableIdSelection: tableIdSelection
             }"
             @update:table="refreshGrid($event)"
           >
@@ -124,9 +177,13 @@
           <q-th auto-width />
           <q-th v-for="col in props.cols" :key="col.name" :props="props">
             {{ col.label }} &nbsp;
+              <q-tooltip>
+                Nome Técnico: '{{ col.name }}'
+              </q-tooltip>
             <q-icon :name="col.icon" size="1.5em" />
           </q-th>
         </q-tr>
+
         <q-tr style="padding:0">
 
           <q-th auto-width>
@@ -158,13 +215,15 @@
 
                 <q-icon v-if="filter.value"  name="search" @click.stop="onRequest(null)" class="cursor-pointer" size="0.8em">
                   <q-tooltip>
-                    Buscar ocorrências com texto "{{ filter.value }}"
+                    Buscar ocorrências com texto "{{ filter.value }}"<br />
+                    Dica: usando o caractere '%' no inicio ou fim, a busca é em qualquer parte do texto.
                   </q-tooltip>
                 </q-icon>
 
-                <q-icon name="filter_alt" class="cursor-pointer" size="0.8em" disabled>
+                <q-icon name="filter_alt" class="cursor-pointer" size="0.8em" @click="filtroAvancado">
                   <q-tooltip>
-                    Filtro Avançado
+                    Filtro Avançado<br />
+                    Bloqueado
                   </q-tooltip>
                 </q-icon>
 
@@ -176,6 +235,21 @@
       </template>
 
 
+       <template v-slot:bottom-row="props" v-if="summarableResults.length > 0">
+        <q-tr :props="props">
+          
+          <q-td auto-width>Totais</q-td>
+          
+          <q-td v-for="col in props.cols" :key="col.name" >
+            <!--q-icon name="person" size="1.5em" /-->
+            <span class="float-right">{{ summarableResults[0][col.name] }}</span>
+          </q-td>
+          
+        </q-tr>
+        
+      </template>
+
+
     </q-table>
 
   </div>
@@ -184,7 +258,7 @@
 <script>
 //Vue 3 is having a special function to define these async functions
 
-import { ref, computed, nextTick, watch } from "vue";
+import { ref, computed, nextTick, watch, onUnmounted } from "vue";
 import { useStore } from "vuex";
 
 import DynamicComponent from "./DynamicComponent.vue";
@@ -205,7 +279,9 @@ export default {
 
     pagination: { type: Object }, //emit event
     fieldFilters: { type: Array, default: [] },
-    columns: { type: Array, default: [] }
+    columns: { type: Array, default: [] },
+    summarableResults: { type: Array, default: [] },
+    //tableIdSelection: { type: String, default: ( Math.random().toString(36).slice(2) ) },
     //selected: { type: Array, default: [] } //emit event
     /*
     page: { type: Number },
@@ -218,6 +294,20 @@ export default {
     const $store = useStore();
     const tableRef = ref(null);
 
+    const tableIdSelection = ref(Math.random().toString(36).slice(2))
+
+    onUnmounted(() => {
+      $store.commit("caixaSelecao/removeSingleRowSelected", {
+          table: props.name,
+          primaryKeyName: props.primaryKey,
+          //row: val,
+          id: tableIdSelection.value
+        });
+    })
+
+    console.log('tableLabel: ' + props.label, 'tableIdSelection: ' + tableIdSelection.value)
+    //console.log('tableIdSelection: ', tableIdSelection.value)
+
     //const selected = ref(props.selected)
 
     //const pagination = ref(props.pagination)
@@ -228,9 +318,17 @@ export default {
         console.log("props table");
         console.log(tableProps);
         //emit("update:pagination", props.pagination);
+       
         emit("update:pagination", tableProps.pagination);
       }
 
+
+      $store.commit("caixaSelecao/removeSingleRowSelected", {
+        table: props.name,
+        primaryKeyName: props.primaryKey,
+        //row: val,
+        id: tableIdSelection.value
+      });
       emit("update:fieldFilters", props.fieldFilters);
     }
 
@@ -241,11 +339,25 @@ export default {
 
     const navigationActive = ref(false);
 
+    const filtroAvancadoDialog = ref(false);
+
     function refreshGrid(evt){
       //console.log('AQUIUIUIUIUI')
       //console.log(evt)      
       emit("update:fieldFilters", props.fieldFilters);
+      //remover caixa de selecao
       showDialogButton.value = false;
+      $store.commit("caixaSelecao/removeSingleRowSelected", {
+          table: props.name,
+          primaryKeyName: props.primaryKey,
+          //row: val,
+          id: tableIdSelection.value
+        });
+    }
+
+    function filtroAvancado(){
+      filtroAvancadoDialog.value = !filtroAvancadoDialog.value;
+      //console.log('filtroAvancadoDialog', filtroAvancadoDialog)
     }
     /*
     watch(selected, (currentValue, oldValue) => {
@@ -281,12 +393,12 @@ export default {
       get: () => {
         if ($store.state.caixaSelecao.singleRowSelected.length > 0) {
           let rs = $store.state.caixaSelecao.singleRowSelected.filter(
-            (el) => el.table == props.name
+            (el) => el.table == props.name && el.id == tableIdSelection.value
           );
           //let rs = $store.state.caixaSelecao.singleRowSelected.filter( el => el.table == id )
           if (rs.length > 0 && rs[0].row) {
             return $store.state.caixaSelecao.singleRowSelected.filter(
-              (el) => el.table == props.name
+              (el) => el.table == props.name && el.id == tableIdSelection.value
             )[0]["row"];
             //return $store.state.caixaSelecao.singleRowSelected.filter( el => el.table == id )[0]['row']
           } else {
@@ -297,10 +409,19 @@ export default {
         }
       },
       set: (val) => {
+        /*
+        console.log('caixaSelecao/setSingleRowSelected: ', {
+          table: props.name,
+          primaryKeyName: props.primaryKey,
+          row: val,
+          id: tableIdSelection.value
+        })
+        */
         $store.commit("caixaSelecao/setSingleRowSelected", {
           table: props.name,
           primaryKeyName: props.primaryKey,
           row: val,
+          id: tableIdSelection.value
         });
         //$store.commit('caixaSelecao/setSingleRowSelected', {table: id, primaryKeyName: props.primaryKey,  row: val})
       },
@@ -433,7 +554,10 @@ export default {
       activateNavigation,
       deactivateNavigation,
       onKey,
-      refreshGrid
+      refreshGrid,
+      filtroAvancado,
+      filtroAvancadoDialog,
+      tableIdSelection
     };
   },
 };

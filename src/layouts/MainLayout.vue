@@ -17,11 +17,16 @@
           icon="menu"
           aria-label="Menu"
           @click="toggleLeftDrawer"
-        />
+        >
+          <q-tooltip>
+            <span v-if="leftDrawerOpen">Ocultar Menu</span>
+            <span v-else>Mostrar Menu</span>
+          </q-tooltip>
+        </q-btn>
 
-        <q-toolbar-title>
+        <!--q-toolbar-title>
           <img src="~assets/logo_cofema_branco.png" style="width: 100px; margin-top: 6px"/>
-        </q-toolbar-title>
+        </q-toolbar-title-->
         <q-space />
 
         
@@ -39,7 +44,12 @@
             :color="$q.dark.isActive ? 'black' : 'white' "
             :icon="$q.dark.isActive ? 'nightlight_round' : 'brightness_low'"
             @click="$q.dark.toggle()"
-          />
+          >
+          <q-tooltip>
+            <span v-if="$q.dark.isActive">Trocar para modo 'Dia'</span>
+            <span v-else>Trocar para modo 'Noite'</span>
+          </q-tooltip>
+        </q-btn>
 
           <q-btn flat round icon="notifications_active" color="" dense >
             <q-badge color="negative" floating>2</q-badge>
@@ -114,15 +124,28 @@
 
           <q-item >
             <q-item-section avatar >
-              <q-icon name="search" font-size="52px"/>
+              <q-icon name="account_circle" font-size="52px"/>
             </q-item-section>
             <q-item-section>
-              <q-input label="Filtro" filled square icon="search" dense style="margin-top:-8px"/>
+
+              <!--q-input label="Filtro" filled square icon="search" dense style="margin-top:-8px"/-->
+
+              <q-input ref="filterRef"  filled square dense v-model="filter" label="Filtro" style="margin-top:-8px;">
+                <template v-slot:append>
+                  <q-icon v-if="filter !== ''" name="clear" class="cursor-pointer" @click="filter = '' " />
+                  <q-icon name="search" />
+                </template>
+              </q-input>
+
             </q-item-section>
           </q-item>
+
+          <q-separator />
+
+          
             
           <LeftMenuItem
-            v-for="(item, k) in menuContent"
+            v-for="(item, k) in menuTreeFilterView"
             :key="k"
             v-bind="item"
           >
@@ -137,7 +160,7 @@
           leave-active-class="animated fadeOut"
         >
 
-      <q-page-container >
+      <q-page-container >   
         <router-view class="q-pa-md" />
       </q-page-container>
 
@@ -156,76 +179,9 @@
 
 import LeftMenuItem from 'src/components/LeftMenuItem.vue'
 
-const menuContent = [
-  { label: 'Home', icon: 'home', link: '/#' },
-  {
-    label: 'Admin',
-    icon: 'settings',
-    "default-opened": true,
-    child: [
-      {
-        label: 'Usuários',
-        icon: 'person',
-        link: '/#/usuarios'
-        /*
-        child: [
-          //{ label: 'Cadastro', icon: 'assignment', link: '/#/usuarios/create' },
-          { label: 'Lista', icon: 'list', link: '/#/usuarios' },
-        ]
-        */
-      },
-      { label: 'Grupos', icon: 'groups', link: '/#/grupos' },
-      { label: 'Produtos', icon: 'card_giftcard', link: '/#/produtos' },
-      { label: 'Fornecedores', icon: 'local_shipping', link: '/#/fornecedores' },
-      { label: 'Clientes', icon: 'people', link: '/#/clientes' },
-    ]
-  },
-  { label: 'login',     icon: 'login', link: '/#/login' },
-  { label: 'Área do Fornecedor',     icon: 'work' },
-  { label: 'Área do Cliente',        icon: 'how_to_reg' },
-  { label: 'Área de Produtos',       icon: 'category' },
-  { label: 'Área de Logística',      icon: 'local_shipping' },
-  { label: 'Área de Marketing',      icon: 'auto_awesome' },
-  { label: 'Área do Financeiro',     icon: 'monetization_on' },
-  { label: 'Atendimento ao Cliente', icon: 'settings_phone' },
-  { label: 'Área de Compras',        icon: 'wysiwyg' },
-  { label: 'Embedded Apps',          icon: 'article', link: '/#/embedded' },
-  {
-    label: 'Folder 1', icon: 'folder',
-    child: [
-        {
-          label: 'Folder 2',
-          icon: 'folder',
-          child:
-            [
-              {
-                label: 'Folder 3',
-                icon: 'folder',
-                child:
-                  [
-                      {
-                        label: 'Home',
-                        icon: 'home',
-                        link: "/#"
-                      },
-                      {
-                        label: 'Home2',
-                        icon: 'home',
-                        link: "/#"
-                      }
-                  ]
-              }
-            ]
-        },
-        {
-          label: 'Folder 2B',
-          icon: 'folder',
-        }
-    ]
-  },
-]
+import repository from "../repositories/menu";
 
-import { defineComponent, ref } from 'vue'
+import { defineComponent, ref, onMounted, computed  } from 'vue'
 
 export default defineComponent({
   name: 'MainLayout',
@@ -237,15 +193,39 @@ export default defineComponent({
   setup () {
     const leftDrawerOpen = ref(false)
     const miniState = ref(true)
+    const menuTree = ref([])
+    const filter = ref('')
 
+    //const menuTreeFilterView = () => menuTree.value.filter( el => el.name.search(filter.value) !== -1 )
+
+    const menuTreeFilterView = computed( () => {
+      if(filter.value && filter.value != ''){
+        return menuTree.value.filter( el => el.nome.search(filter.value) !== -1 )
+      }else{
+        return menuTree.value
+      }
+    })
+
+
+    onMounted(() => {
+      getTree()
+    })
+
+    async function getTree(){
+        menuTree.value = await repository.menuTree()
+        menuTree.value = menuTree.value.sort((a, b) => a.id > b.id ? 1 : -1); // Ordenação
+        //console.log(menuTree.value)
+    }
 
     return {
-      menuContent,
+      menuTree,
+      menuTreeFilterView,
       leftDrawerOpen,
       miniState,
       toggleLeftDrawer () {
         leftDrawerOpen.value = !leftDrawerOpen.value
-      }
+      },
+      filter
     }
   }
 })

@@ -18,13 +18,15 @@ export default function GridModel({componentName, repository}) {
         sortBy: '1',
         descending: true,
         page: 1,
-        rowsPerPage: 10,
+        rowsPerPage: 12,
         //rowsNumber: 15
       });
       const loading = ref(false);
       const fieldFilters = ref([]);
 
-      const filter = ref("");
+      //const filter = ref("");
+
+      const summarableResults = ref([])
 
       async function getData() {
         loading.value = true;
@@ -40,7 +42,7 @@ export default function GridModel({componentName, repository}) {
           }
         });
 
-        filters = filters.filter((el) => el != null);
+        filters = filters.filter( el => el != null);
 
         let rs = await repository.get(
           pagination.value.page,
@@ -57,9 +59,11 @@ export default function GridModel({componentName, repository}) {
               name: el.name,
               label: el.label,
               value: null,
+              //value: el.name == 'grupo_id' ? '1' : null,
             });
           });
         }
+
 
         //console.log(fieldFilters.value)
         
@@ -74,6 +78,8 @@ export default function GridModel({componentName, repository}) {
         //pagination.value.sortBy = primaryKey.value
         pagination.value.rowsNumber = rs.metadata.pagination.rowsNumber;
 
+        summarableResults.value = rs.metadata.summable_results
+
         rows.value = rs.results;
         loading.value = false;
       }
@@ -84,7 +90,7 @@ export default function GridModel({componentName, repository}) {
 
       return {
         rows,
-        filter,
+        //filter,
         tableName,
         tableLabel,
         primaryKey,
@@ -95,6 +101,7 @@ export default function GridModel({componentName, repository}) {
         getData,
         loading,
         fieldFilters,
+        summarableResults
       };
     },
   });

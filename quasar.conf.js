@@ -44,6 +44,7 @@ module.exports = configure(function (ctx) {
 
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
     build: {
+      devtool: 'source-map', //debuger breakpoint netto 2022-03-29 
       vueRouterMode: 'hash', // available values: 'hash', 'history'
 
       // transpile: false,

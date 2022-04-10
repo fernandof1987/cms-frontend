@@ -5,7 +5,7 @@ function BaseRepository({pathName}){
 
         async get(page = 1, limit = 10, sortBy = 'id', descending = false, filters){
             let url = `/${pathName}?page=${page}&limit=${limit}&sortBy=${sortBy}&descending=${descending}`
-            if(filters != ''){
+            if(filters != '' && filters != undefined){
                 url += `&filter=${JSON.stringify(filters)}`
             }
             let rs = await api.get(url)
