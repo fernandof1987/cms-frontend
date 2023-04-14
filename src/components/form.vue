@@ -48,11 +48,14 @@
 
         <!--q-btn label="import" color="negative" @click="importTabelaConsulta('grupos')" /-->
 
-            <q-card-section>
+            <q-card-section v-if="formHeader.label || formHeader.icon">
 
                 <div class="q-gutter-md row items-start">
-                    <div class="text-h6"><q-icon :name="formHeader.icon"/> Formulário de {{ formHeader.label }} </div>
+                    
+                    <div class="text-h6" v-if="formHeader.label || formHeader.icon" ><q-icon :name="formHeader.icon"/> Formulário de {{ formHeader.label }} </div>
+
                     <q-space />
+
                     <q-input v-model="formFilterText" outlined rounded dense type="text" label="filtrar campos" style="max-width: 180px" class="" v-if="filterFields">
                         <template v-slot:append>
                             <q-icon name="search"/>
@@ -87,7 +90,7 @@
                 </div-->
             </q-card-section>
 
-            <q-separator />
+            <q-separator v-if="formHeader.label || formHeader.icon" />
 
             <q-card-section>
                 <div :class=" displayInline ? 'q-gutter-md row items-start' : 'q-gutter-md' " >
@@ -177,9 +180,9 @@
                 </div>
             </q-card-section>
 
-            <q-separator />
+            <q-separator v-if="submit"/>
 
-            <q-card-section> 
+            <q-card-section v-if="submit"> 
                 <div class="q-gutter-md row items-start">
                     <div class="text-caption" v-if="vwForm.length < form.length">{{ `(${vwForm.length}) campo's com "${formFilterText}" no nome ` }} </div>
                     <q-space />

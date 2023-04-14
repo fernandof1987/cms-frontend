@@ -73,8 +73,8 @@
 
             </q-popup-proxy>
           </q-btn>
-
-          <q-btn-dropdown dense stretch flat label="Usuario" icon="account_circle">
+        
+          <q-btn-dropdown dense stretch flat :label="usuario?.nome" icon="account_circle">
             <q-list>
               <q-item-label header>Quasar v{{ $q.version }}</q-item-label>
               <q-item-label header>Folders</q-item-label>
@@ -183,6 +183,9 @@ import repository from "../repositories/menu";
 
 import { defineComponent, ref, onMounted, computed  } from 'vue'
 
+import { LocalStorage, useQuasar } from 'quasar'
+
+
 export default defineComponent({
   name: 'MainLayout',
 
@@ -196,6 +199,8 @@ export default defineComponent({
     const menuTree = ref([])
     const filter = ref('')
 
+    let usuario = ref({})
+
     //const menuTreeFilterView = () => menuTree.value.filter( el => el.name.search(filter.value) !== -1 )
 
     const menuTreeFilterView = computed( () => {
@@ -208,8 +213,20 @@ export default defineComponent({
 
 
     onMounted(() => {
-      getTree()
+      getTree(),
+      getUser()
     })
+
+    async function getUser(){
+
+      let login = LocalStorage.getItem('login')
+
+      //console.log('AQUI login')
+        
+      if(login){
+          usuario.value = login
+      }
+    }
 
     async function getTree(){
         menuTree.value = await repository.menuTree()
@@ -225,7 +242,8 @@ export default defineComponent({
       toggleLeftDrawer () {
         leftDrawerOpen.value = !leftDrawerOpen.value
       },
-      filter
+      filter,
+      usuario
     }
   }
 })

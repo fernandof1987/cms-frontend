@@ -18,25 +18,29 @@ export default route(function (/* { store, ssrContext } */) {
     ? createMemoryHistory
     : (process.env.VUE_ROUTER_MODE === 'history' ? createWebHistory : createWebHashHistory)
 
-  const Router = createRouter({
-    scrollBehavior: () => ({ left: 0, top: 0 }),
-    routes,
+    const Router = createRouter({
+      scrollBehavior: () => ({ left: 0, top: 0 }),
+      routes,
 
-    // Leave this as is and make changes in quasar.conf.js instead!
-    // quasar.conf.js -> build -> vueRouterMode
-    // quasar.conf.js -> build -> publicPath
-    history: createHistory(process.env.MODE === 'ssr' ? void 0 : process.env.VUE_ROUTER_BASE)
-  })
+      // Leave this as is and make changes in quasar.conf.js instead!
+      // quasar.conf.js -> build -> vueRouterMode
+      // quasar.conf.js -> build -> publicPath
+      history: createHistory(process.env.MODE === 'ssr' ? void 0 : process.env.VUE_ROUTER_BASE)
+    })
 
-  /*
+  
   Router.beforeEach((to, from, next) => {
     //console.log('aqui!!!!!!!!!!!!!!!!!!!!')
     //console.log(to)
     //console.log(to.meta.noAuthenticate)
     //checa se rota precisa de autenticaçãp
     //next()
+
+    //console.log('AQUI!!')
     
     if(to.path != '/login') {
+
+      //console.log(to.path)
 
       let login = LocalStorage.getItem('login')
   
@@ -50,7 +54,7 @@ export default route(function (/* { store, ssrContext } */) {
     }
     
   })
-  */
+  
 
   return Router
 })

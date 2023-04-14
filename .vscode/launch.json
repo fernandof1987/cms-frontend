@@ -9,7 +9,7 @@
 			"webRoot": "${workspaceFolder}/src",
 			"breakOnLoad": true,
 			"sourceMapPathOverrides": {
-				"webpack://package-name/./src/*": "${webRoot}/*"
+				"webpack://cms/./src/*": "${webRoot}/*"
 			}
 		}
 	]

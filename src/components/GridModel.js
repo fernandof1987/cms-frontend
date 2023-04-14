@@ -23,6 +23,7 @@ export default function GridModel({componentName, repository}) {
       });
       const loading = ref(false);
       const fieldFilters = ref([]);
+      const selectedRow = ref([])
 
       //const filter = ref("");
 
@@ -37,6 +38,7 @@ export default function GridModel({componentName, repository}) {
               field: el.name,
               operator: "LIKE",
               value: el.value.replace(/\%/g, "%25"),
+              type: el.type
             };
             return item;
           }
@@ -59,6 +61,7 @@ export default function GridModel({componentName, repository}) {
               name: el.name,
               label: el.label,
               value: null,
+              type: el.type
               //value: el.name == 'grupo_id' ? '1' : null,
             });
           });
@@ -101,7 +104,12 @@ export default function GridModel({componentName, repository}) {
         getData,
         loading,
         fieldFilters,
-        summarableResults
+        summarableResults,
+        teste2(evento){
+          selectedRow.value = evento
+          console.log('evento')
+          console.log(evento)
+        }
       };
     },
   });

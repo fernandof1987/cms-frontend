@@ -57,7 +57,6 @@
               <q-tooltip class="">{{ prop.node.label }} Tipo {{ prop.node.tipo == 1 ? '1 - Folder' : prop.node.tipo == 2 ? '2 - App' : '3 - Action' }}</q-tooltip>
             </div>&nbsp;&nbsp;&nbsp;
 
-
             <q-btn
               v-if="prop.node.tipo != 3"
               size="xs" dense flat round color="positive" icon="add"    @click="actionForm='create', primaryKeyValueForm = null, modalForm = true"

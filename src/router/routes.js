@@ -22,6 +22,7 @@ const routes = [
       //{ path: '/login', component: () => import('pages/login/Index.vue') },
 
       { path: '/usuarios', component: () => import('src/pages/usuarios/Grid.vue') },
+      { path: '/usuarios2', component: () => import('src/pages/usuarios2/Grid.vue') },
       //{ path: '/usuarios/create', component: () => import('pages/usuarios/Cadastro.vue') },
 
       { path: '/grupos', component: () => import('src/pages/grupos/Grid.vue') },

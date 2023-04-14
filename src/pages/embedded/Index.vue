@@ -40,7 +40,7 @@ export default defineComponent({
         console.log('mounted!')
         //console.log(reportContainer.value)
         let groupId = 'ca5b45fe-1be2-4074-b311-7f69e5c27010'
-        let reportId = '6eb6b413-6ade-4e66-8143-30bb0f22752f'
+        let reportId = '7210ed14-7d33-41d9-9b9b-8e00bb64e7b0'
         let apiData = await getToken(groupId, reportId)
         let token = apiData.results.token
         //console.log(token.results.token)

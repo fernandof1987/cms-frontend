@@ -2,12 +2,11 @@
   <div class="q-pa-md q-gutter-sm">
     <span class="text-h6">
       Grupo x Menu
-    
+
       <q-btn
         color="primary"
         dense
         size="sm"
-        
         label="Vizualizar Novo Menu"
         @click="refreshTree"
       />
@@ -16,6 +15,16 @@
     <br />
 
     ticked: {{ ticked }}
+
+    <div style="width: 350px;" :class="'' /*bg-grey*/">
+      <Form
+        action="create"
+        :filterFields="false"
+        :displayInline="false"
+        :form="form"
+      >
+      </Form>
+    </div>
 
     <q-separator />
 
@@ -42,12 +51,12 @@
 <script>
 import { ref, onMounted } from "vue";
 
-//import Form from './Form.vue'
+import Form from "components/Form.vue";
 
 import repository from "../../repositories/menu.js";
 
 export default {
-  components: {},
+  components: { Form },
   setup() {
     const menu = [];
     const menuTree = ref([]);
@@ -57,6 +66,25 @@ export default {
     const tickStrategy = ref("leaf");
 
     const splitterModel = ref(50); // start at 50%
+
+    const form = {
+      name: "",
+      label: "",
+      icon: "",
+      fields: [
+        {
+          name: "grupo_id",
+          label: "Grupo",
+          type: "table",
+          tableName: "grupos",
+          primaryKeyName: "id",
+          fieldsReturned: ["id", "nome"],
+          icon: "groups",
+          required: true,
+          sequence: 5,
+        },
+      ],
+    };
 
     function onNodeClick(node) {
       alert("onNodeClick");
@@ -148,6 +176,9 @@ export default {
       refreshTree,
       splitterModel,
       recursiveTopDownTree,
+
+      form
+
     };
   },
 };

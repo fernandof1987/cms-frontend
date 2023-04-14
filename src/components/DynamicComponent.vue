@@ -1,5 +1,5 @@
 <template>
-    <component v-if="comp" :is="comp" v-bind="componentsProps"></component>
+    <component v-if="comp" :is="comp" v-bind="componentsProps" @update:selectedRow="(teste3($event))"></component>
 </template>
 
 <script>
@@ -25,16 +25,19 @@ export default {
         },
         componentsProps: { type: Object, default: {} }
     },
- 
     computed: {
         comp () {
 
             //"solucao" para conseguir o import dinamico variavel no path inteiro da pau no webpack
             if(this.folder == 'components'){
+                //console.log('this.componentsProps')
+                //console.log(this.componentsProps)
                 return defineAsyncComponent(() => import(`src/components/${this.file}`))
             }
             
             if(this.folder == 'pages') {
+                //console.log('this.componentsProps')
+                //console.log(this.componentsProps)
                 //console.log( defineAsyncComponent(() => import(`src/pages/${this.file}`)) )
                 return defineAsyncComponent(() => import(`src/pages/${this.file}`))
             }
@@ -44,6 +47,15 @@ export default {
     },
     setup(props) {
 
+        
+        function teste3(evento){
+            console.log('teste3'),
+            console.log(evento)
+        }
+
+        return {
+            teste3
+        }
         
         /*
         onUpdated( () => {

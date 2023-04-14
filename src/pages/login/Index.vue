@@ -42,13 +42,14 @@ export default defineComponent({
             fields: [
                 { name: 'username', label: 'Usuário', required: true, type: 'text', icon: 'person', sequence: 0 },
                 { name: 'password', label: 'Senha', required: true, type: 'password', icon: 'lock', sequence: 1 },
+                { name: 'ldap', label: "LDAP", type: "select", options: [{ label: "Não", value: false }, { label: "Sim", value: true }], default: { label: "Não", value: false } }
             ]
         }
 
         async function loginAndRegisterLocalStorage(formModel){
             
-            let { username, password } = formModel
-            let rs = await login(username, password)
+            let { username, password, ldap } = formModel
+            let rs = await login(username, password, ldap = ldap.value)
 
             //console.log('loginAndRegisterLocalStorage')
             //console.log(rs)

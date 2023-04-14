@@ -17,14 +17,16 @@ export default defineComponent({
 
     const router = useRouter()
 
-
+    
     let login = LocalStorage.getItem('login')
+    //alert(login)
     //console.log('login')
     //console.log(login)
 
     if(login && login.token){
         api.defaults.headers.common['token'] = login.token
     }else{
+        console.log('else')
         router.push('/login')
     }
 

@@ -195,8 +195,9 @@
             :key="k"
             style="padding: 0; margin: 0"
           >
+          
             <q-input
-              type="text"
+              :type="filter.type || 'text'"
               :label="''/*filter.label*/"
               v-model="filter.value"
               filled
@@ -289,7 +290,7 @@ export default {
     rowsNumber: { type: Number }
     */
   },
-  emits: ["update:pagination", "update:selected", "update:fieldFilters"],
+  emits: ["update:pagination", "update:selected", "update:fieldFilters", "update:selectedRow"],
   setup(props, { emit }) {
     const $store = useStore();
     const tableRef = ref(null);
@@ -389,6 +390,21 @@ export default {
       navigationActive.value = false;
     }
 
+    const selectedValue = ref([])
+
+    /*
+    const selected = computed({
+      get: () => {
+        //console.log(this)
+        return selectedValue.value
+      },
+      set: val => {
+        selectedValue.value = val
+        emit("update:selectedRow", val);
+      }
+    })
+    */
+    
     const selected = computed({
       get: () => {
         if ($store.state.caixaSelecao.singleRowSelected.length > 0) {
@@ -409,14 +425,6 @@ export default {
         }
       },
       set: (val) => {
-        /*
-        console.log('caixaSelecao/setSingleRowSelected: ', {
-          table: props.name,
-          primaryKeyName: props.primaryKey,
-          row: val,
-          id: tableIdSelection.value
-        })
-        */
         $store.commit("caixaSelecao/setSingleRowSelected", {
           table: props.name,
           primaryKeyName: props.primaryKey,
@@ -426,6 +434,7 @@ export default {
         //$store.commit('caixaSelecao/setSingleRowSelected', {table: id, primaryKeyName: props.primaryKey,  row: val})
       },
     });
+    
 
     async function onKey(evt) {
       console.log('navigationActive.value !== true', navigationActive.value !== true)

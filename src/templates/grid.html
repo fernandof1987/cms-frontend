@@ -10,6 +10,7 @@
       :loading="loading"
       @update:pagination="(pagination = $event), getData()"
       @update:fieldFilters="(fieldFilters = $event), getData()"
+      @update:selectedRow="(teste2($event))"
       :fieldFilters="fieldFilters"
       :columns="columns"
       @update:table="teste($event)"
